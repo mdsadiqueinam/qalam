@@ -1,3 +1,265 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --animate-spin-slow: spin 9s linear infinite;
+
+  --breakpoint-hub-md: 825px;
+  --breakpoint-hub-lg: 1440px;
+  --breakpoint-xs: 450px;
+
+  --text-2xl: 2.14em;
+  --text-xxl: 1.7em;
+  --text-xl: 1.42em;
+  --text-lg: 1.3em;
+  --text-md: 1.1em;
+  --text-sm: 1em;
+  --text-nav: 0.92em;
+  --text-tiny: 0.71em;
+
+  --font-sans:
+    "Noto Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: "Noto Serif", ui-serif, Georgia, serif;
+  --font-weight-semibold: 500;
+
+  --color-black: #2b2b29;
+
+  --color-gray-1: #333333;
+  --color-gray-5: #e0e0e0;
+  --color-gray-c: #f7f7f7;
+
+  --color-gray-dark-2: #333330;
+  --color-gray-dark: #a9a9a9;
+
+  --color-background-light: #f6f8f6;
+  --color-background-dark: #112111;
+
+  --color-good: #66bb55;
+  --color-bad: #f20101;
+  --color-red: #f20101;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #92400e;
+  --color-danger: #dc2626;
+  --color-danger-light: #fecaca;
+  --color-danger-dark: #991b1b;
+  --color-past: #ed9121;
+  --color-running: #128b32;
+  --color-priority-high: var(--priority-high);
+  --color-priority-medium: var(--priority-medium);
+  --color-priority-low: var(--priority-low);
+  --color-divider: var(--divider);
+  --color-divider-subtle: var(--divider-subtle);
+  --color-divider-hover: var(--divider-hover);
+  --color-divider-outline: var(--divider-outline);
+  --color-main: var(--main);
+  --color-main-subtle-hover: var(--main-subtle-hover);
+  --color-main-selected: var(--main-selected);
+  --color-main-text: var(--main-text);
+  --color-main-text-hover: var(--main-text-hover);
+  --color-main-text-muted: var(--main-text-muted);
+  --color-main-selected-text: var(--main-selected-text);
+  --color-main-unselected-text: var(--main-unselected-text);
+  --color-main-unselected: var(--main-unselected);
+  --color-main-unselected-hover: var(--main-unselected-hover);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-sidebar-text-hover: var(--sidebar-text-hover);
+  --color-sidebar-text-selected: var(--sidebar-text-selected);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-selected: var(--sidebar-selected);
+  --color-sidebar-unselected: var(--sidebar-unselected);
+  --color-sidebar-unselected-hover: var(--sidebar-unselected-hover);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-text: var(--primary-text);
+  --color-primary-text-hover: var(--primary-text-hover);
+  --color-secondary: var(--secondary);
+  --color-link-text: var(--secondary-text);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-hover: var(--border-hover);
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility custom-wrap-360 {
+  @media (max-width: 360px) {
+    flex-wrap: wrap;
+  }
+}
+
+@utility show-at-320 {
+  @media (min-width: 360px) {
+    display: block;
+  }
+}
+
+@layer utilities {
+  body {
+    font-size: 14px;
+  }
+  body.font-smaller {
+    font-size: 12px;
+  }
+  body.font-small {
+    font-size: 13px;
+  }
+  body.font-large {
+    font-size: 15px;
+  }
+  body.font-larger {
+    font-size: 16px;
+  }
+
+  :focus-visible {
+    outline: 1px solid rgb(0, 89, 255);
+  }
+
+  .btn {
+    @apply flex items-center whitespace-nowrap rounded-lg border border-transparent bg-white px-4 py-2 text-center text-sm font-medium text-black transition-colors duration-150 hover:bg-white/90 focus:outline-hidden active:bg-gray-100 active:text-gray-700;
+  }
+
+  /* Scroll bar stylings */
+  ::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: none;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: none;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: none;
+  }
+}
+
+@layer base {
+  :root,
+  .light {
+    /* Globals - same in light and dark */
+    --priority-high: #ef4444;
+    --priority-medium: #f59e0b;
+    --priority-low: #10b981;
+
+    /* ***** LIGHT THEME - SOFT SLATE ***** */
+    --divider: #e0e0e0;
+    --divider-subtle: #eef1f566;
+    --divider-hover: #d8dce3; /* for drag */
+    --divider-outline: #c3cad6aa; /* for button outline */
+    /* main - main background */
+    --main: #f5f7fa;
+    --main-subtle-hover: #edf2ff;
+    --main-selected: #e6f4ff;
+    --main-text: #1c2434;
+    --main-text-hover: #111827;
+    --main-text-muted: #9ca3af;
+    --main-selected-text: #111827;
+    --main-unselected: #f0f4fb;
+    --main-unselected-text: #94a3b8;
+    --main-unselected-hover: #e8edf6;
+    /* main 2 - used in sidebar */
+    --sidebar: #ffffff;
+    --sidebar-text: #4b5563;
+    --sidebar-text-hover: #1f2937;
+    --sidebar-hover: #edf2ff;
+    --sidebar-selected: #e6f4ff;
+    --sidebar-unselected: #f8fafc;
+    --sidebar-unselected-hover: #eef2f7;
+    --sidebar-text-selected: #1c2434;
+    /* Primary button color - Qalam green */
+    --primary: #169c16;
+    --primary-hover: #128b14;
+    --primary-text: #ffffff;
+    --primary-text-hover: #f8f9fa;
+    /* Secondary button color */
+    --secondary: #169c16;
+    /* Border colors */
+    --border-subtle: #e0e0e0;
+    --border-default: #e0e0e0;
+    --border-hover: #adb8c9;
+  }
+
+  .dark {
+    --divider: #3b4754;
+    --divider-subtle: #2f374466;
+    --divider-hover: #3d4655; /* for drag */
+    --divider-outline: #4e586baa; /* for button outline */
+    /* main (main background) */
+    --main: #101922;
+    --main-subtle-hover: #141b23;
+    --main-text: #e0e0e0;
+    --main-text-hover: #f5f7fa;
+    --main-text-muted: #9daab8;
+    --main-unselected: #182330;
+    --main-unselected-text: #8a94a6;
+    --main-unselected-hover: #1f2c3a;
+    --main-selected: #1c2533;
+    --main-selected-text: #f5f7fa;
+    /* Sidebar */
+    --sidebar: #1c2127;
+    --sidebar-text: #b5c4d6;
+    --sidebar-text-hover: #c5d2e3;
+    --sidebar-text-selected: #ffffff;
+    --sidebar-hover: #141b23;
+    --sidebar-selected: #283240;
+    --sidebar-unselected: #1c2127;
+    --sidebar-unselected-hover: #232a34;
+    /* Primary button color */
+    --primary: #1eb81e;
+    --primary-hover: #1aa01a;
+    --primary-text: #ffffff;
+    --primary-text-hover: #f5f7fa;
+    /* Secondary button color */
+    --secondary: #1eb81e;
+    /* Border colors */
+    --border-subtle: #3b4754;
+    --border-default: #3b4754;
+    --border-hover: #4d5667;
+  }
+}
+
+@layer utilities {
+  .status-change-enter-active,
+  .status-change-leave-active {
+    transition: all 0.3s ease;
+  }
+
+  .status-change-enter-from {
+    transform: scale(0.8) rotate(-180deg);
+  }
+
+  .status-change-leave-to {
+    transform: scale(0.8) rotate(10deg);
+  }
+}
+
+.spinner {
+  @apply w-8 h-8 border-2 border-solid border-primary rounded-full border-t-transparent animate-spin;
+}
