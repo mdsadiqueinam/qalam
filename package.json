@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
@@ -20,9 +21,18 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.28.6",
+    "@babel/preset-env": "^7.29.0",
+    "@eslint/js": "^10.0.1",
+    "@intlify/eslint-plugin-vue-i18n": "^4.1.1",
     "@tailwindcss/vite": "^4.1.18",
     "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/eslint-config-prettier": "^10.2.0",
     "@vueuse/core": "^14.2.1",
+    "eslint": "^10.0.0",
+    "eslint-plugin-oxlint": "^1.48.0",
+    "eslint-plugin-vue": "^10.8.0",
+    "globals": "^17.3.0",
     "nuxt": "^4.3.1",
     "tailwindcss": "^4.1.18",
     "unplugin-auto-import": "^21.0.0",
