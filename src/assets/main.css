@@ -30,12 +30,6 @@
   --color-gray-5: #e0e0e0;
   --color-gray-c: #f7f7f7;
 
-  --color-gray-dark-2: #333330;
-  --color-gray-dark: #a9a9a9;
-
-  --color-background-light: #f6f8f6;
-  --color-background-dark: #112111;
-
   --color-good: #66bb55;
   --color-bad: #f20101;
   --color-red: #f20101;
@@ -174,7 +168,7 @@
     --divider-hover: #d8dce3; /* for drag */
     --divider-outline: #c3cad6aa; /* for button outline */
     /* main - main background */
-    --main: #f5f7fa;
+    --main: #f6f8f6;
     --main-subtle-hover: #edf2ff;
     --main-selected: #e6f4ff;
     --main-text: #1c2434;
@@ -212,7 +206,7 @@
     --divider-hover: #3d4655; /* for drag */
     --divider-outline: #4e586baa; /* for button outline */
     /* main (main background) */
-    --main: #101922;
+    --main: #112111;
     --main-subtle-hover: #141b23;
     --main-text: #e0e0e0;
     --main-text-hover: #f5f7fa;

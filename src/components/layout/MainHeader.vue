@@ -5,14 +5,14 @@ import ThemeToggle from "@components/common/ThemeToggle.vue";
 
 <template>
   <header
-    class="flex h-16 items-center justify-between border-b border-primary/10 bg-white dark:bg-sidebar px-6 py-3 shrink-0"
+    class="flex h-16 items-center justify-between border-b border-divider bg-sidebar px-6 py-3 shrink-0"
   >
     <div class="flex items-center gap-3">
-      <div class="bg-primary p-1.5 rounded-lg text-white">
+      <div class="bg-primary p-1.5 rounded-lg text-primary-text">
         <BookOpenIcon class="w-6 h-6" />
       </div>
       <h1
-        class="font-display text-xl font-bold text-slate-800 dark:text-sidebar-text-selected tracking-tight"
+        class="font-display text-xl font-bold text-sidebar-text-selected tracking-tight"
       >
         Qalam
       </h1>

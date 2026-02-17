@@ -25,14 +25,14 @@ function handleNavigate(section) {
 
 <template>
   <aside
-    class="flex w-16 flex-col items-center border-r border-primary/10 bg-white dark:bg-sidebar py-6 gap-8 shrink-0"
+    class="flex w-16 flex-col items-center border-r border-divider bg-sidebar py-6 gap-8 shrink-0"
   >
     <button
       class="group flex flex-col items-center gap-1 transition-colors"
       :class="
         activeSection === 'dashboard'
           ? 'text-primary'
-          : 'text-slate-400 dark:text-slate-500 hover:text-primary'
+          : 'text-sidebar-text hover:text-primary'
       "
       @click="handleNavigate('dashboard')"
     >
@@ -53,7 +53,7 @@ function handleNavigate(section) {
       :class="
         activeSection === 'editor'
           ? 'text-primary'
-          : 'text-slate-400 dark:text-slate-500 hover:text-primary'
+          : 'text-sidebar-text hover:text-primary'
       "
       @click="handleNavigate('editor')"
     >
@@ -74,7 +74,7 @@ function handleNavigate(section) {
       :class="
         activeSection === 'files'
           ? 'text-primary'
-          : 'text-slate-400 dark:text-slate-500 hover:text-primary'
+          : 'text-sidebar-text hover:text-primary'
       "
       @click="handleNavigate('files')"
     >
@@ -95,7 +95,7 @@ function handleNavigate(section) {
       :class="
         activeSection === 'analytics'
           ? 'text-primary'
-          : 'text-slate-400 dark:text-slate-500 hover:text-primary'
+          : 'text-sidebar-text hover:text-primary'
       "
       @click="handleNavigate('analytics')"
     >
@@ -117,7 +117,7 @@ function handleNavigate(section) {
         :class="
           activeSection === 'settings'
             ? 'text-primary'
-            : 'text-slate-400 dark:text-slate-500 hover:text-primary'
+            : 'text-sidebar-text hover:text-primary'
         "
         @click="handleNavigate('settings')"
       >

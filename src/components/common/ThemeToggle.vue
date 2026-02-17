@@ -9,7 +9,7 @@ const toggleDark = useToggle(isDark);
 
 <template>
   <button
-    class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary dark:hover:text-primary transition-colors"
+    class="flex items-center justify-center w-10 h-10 rounded-lg text-sidebar-text hover:bg-primary/10 hover:text-primary transition-colors"
     aria-label="Toggle theme"
     @click="toggleDark()"
   >

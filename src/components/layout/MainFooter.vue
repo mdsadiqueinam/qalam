@@ -28,10 +28,10 @@ defineProps({
 
 <template>
   <footer
-    class="flex h-8 items-center justify-between bg-white dark:bg-sidebar px-4 border-t border-slate-200 dark:border-divider shrink-0"
+    class="flex h-8 items-center justify-between bg-sidebar px-4 border-t border-divider shrink-0"
   >
     <div
-      class="flex items-center gap-4 text-[10px] font-medium text-slate-400 dark:text-slate-500"
+      class="flex items-center gap-4 text-[10px] font-medium text-main-text-muted"
     >
       <div v-if="syncActive" class="flex items-center gap-1.5">
         <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
@@ -40,7 +40,7 @@ defineProps({
       <div v-if="lastSaved">{{ lastSaved }}</div>
     </div>
     <div
-      class="flex items-center gap-6 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter"
+      class="flex items-center gap-6 text-[10px] font-bold text-sidebar-text uppercase tracking-tighter"
     >
       <div class="flex items-center gap-1">
         <LanguageIcon class="w-3 h-3" />
