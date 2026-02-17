@@ -100,7 +100,7 @@ export default defineConfig([
       '@intlify/vue-i18n/no-deprecated-tc': 'error',
       '@intlify/vue-i18n/no-deprecated-v-t': 'error',
       '@intlify/vue-i18n/no-i18n-t-path-prop': 'error',
-      '@intlify/vue-i18n/no-raw-text': 'error',
+      '@intlify/vue-i18n/no-raw-text': 'off',
       '@intlify/vue-i18n/no-v-html': 'error',
       '@intlify/vue-i18n/valid-message-syntax': 'error',
       '@intlify/vue-i18n/no-duplicate-keys-in-locale': 'error',

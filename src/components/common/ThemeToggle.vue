@@ -9,9 +9,9 @@ const toggleDark = useToggle(isDark);
 
 <template>
   <button
-    @click="toggleDark()"
     class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary dark:hover:text-primary transition-colors"
     aria-label="Toggle theme"
+    @click="toggleDark()"
   >
     <SunIcon v-if="isDark" class="w-5 h-5 transition-transform duration-200" />
     <MoonIcon v-else class="w-5 h-5 transition-transform duration-200" />

@@ -8,7 +8,7 @@ import {
 } from "@heroicons/vue/outline";
 
 // --- Props & models
-const props = defineProps({
+defineProps({
   activeSection: {
     type: String,
     default: "editor",
@@ -28,13 +28,13 @@ function handleNavigate(section) {
     class="flex w-16 flex-col items-center border-r border-primary/10 bg-white dark:bg-sidebar py-6 gap-8 shrink-0"
   >
     <button
-      @click="handleNavigate('dashboard')"
       class="group flex flex-col items-center gap-1 transition-colors"
       :class="
         activeSection === 'dashboard'
           ? 'text-primary'
           : 'text-slate-400 dark:text-slate-500 hover:text-primary'
       "
+      @click="handleNavigate('dashboard')"
     >
       <span
         class="p-2 rounded-xl transition-colors"
@@ -49,13 +49,13 @@ function handleNavigate(section) {
     </button>
 
     <button
-      @click="handleNavigate('editor')"
       class="group flex flex-col items-center gap-1 transition-colors"
       :class="
         activeSection === 'editor'
           ? 'text-primary'
           : 'text-slate-400 dark:text-slate-500 hover:text-primary'
       "
+      @click="handleNavigate('editor')"
     >
       <span
         class="p-2 rounded-xl transition-colors"
@@ -70,13 +70,13 @@ function handleNavigate(section) {
     </button>
 
     <button
-      @click="handleNavigate('files')"
       class="group flex flex-col items-center gap-1 transition-colors"
       :class="
         activeSection === 'files'
           ? 'text-primary'
           : 'text-slate-400 dark:text-slate-500 hover:text-primary'
       "
+      @click="handleNavigate('files')"
     >
       <span
         class="p-2 rounded-xl transition-colors"
@@ -91,13 +91,13 @@ function handleNavigate(section) {
     </button>
 
     <button
-      @click="handleNavigate('analytics')"
       class="group flex flex-col items-center gap-1 transition-colors"
       :class="
         activeSection === 'analytics'
           ? 'text-primary'
           : 'text-slate-400 dark:text-slate-500 hover:text-primary'
       "
+      @click="handleNavigate('analytics')"
     >
       <span
         class="p-2 rounded-xl transition-colors"
@@ -113,13 +113,13 @@ function handleNavigate(section) {
 
     <div class="mt-auto">
       <button
-        @click="handleNavigate('settings')"
         class="group flex flex-col items-center gap-1 transition-colors"
         :class="
           activeSection === 'settings'
             ? 'text-primary'
             : 'text-slate-400 dark:text-slate-500 hover:text-primary'
         "
+        @click="handleNavigate('settings')"
       >
         <span
           class="p-2 rounded-xl transition-colors"

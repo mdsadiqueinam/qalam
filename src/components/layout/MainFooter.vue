@@ -2,7 +2,7 @@
 import { LanguageIcon, DocumentTextIcon } from "@heroicons/vue/outline";
 
 // --- Props & models
-const props = defineProps({
+defineProps({
   syncActive: {
     type: Boolean,
     default: true,
