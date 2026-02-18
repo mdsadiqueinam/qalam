@@ -1,12 +1,16 @@
 import {
+  KEYBOARD_LAYOUT,
   KEYBOARD_ROWS,
   FALLBACK_QWERTY_KEYS,
   SHIFT_MAP,
 } from "@root/constants/keyboard";
 
 /**
- * Detects the current keyboard layout using the Keyboard API
- * @returns {Promise<Object>} Layout detection result with layout map, key map, and support status
+ * Detects the current keyboard layout using the Keyboard API.
+ * Returns a full layout array-of-arrays where each key is:
+ *   { code, type: 'char'|'special', englishKey?: { normal, shift }, label?, width? }
+ *
+ * @returns {Promise<Object>} { supported, layoutMap, layout, keyMap }
  */
 export async function detectKeyboardLayout() {
   // Check if Keyboard API is supported
@@ -15,33 +19,19 @@ export async function detectKeyboardLayout() {
     return {
       supported: false,
       layoutMap: null,
-      layout: null,
+      layout: buildFullLayout(null),
       keyMap: generateFallbackKeyMap(),
     };
   }
 
   try {
     const layoutMap = await navigator.keyboard.getLayoutMap();
-
-    // Build keyboard layout from the detected layout
-    const layout = KEYBOARD_ROWS.map((row) => {
-      return row.map((code) => {
-        const key =
-          layoutMap.get(code) || code.replace(/^Key/, "").replace(/^Digit/, "");
-        return {
-          code,
-          key: key.toUpperCase(),
-          display: key.toUpperCase(),
-        };
-      });
-    });
-
     const keyMap = generateKeyMap(layoutMap);
 
     return {
       supported: true,
       layoutMap,
-      layout,
+      layout: buildFullLayout(layoutMap),
       keyMap,
     };
   } catch (error) {
@@ -49,10 +39,60 @@ export async function detectKeyboardLayout() {
     return {
       supported: false,
       layoutMap: null,
-      layout: null,
+      layout: buildFullLayout(null),
       keyMap: generateFallbackKeyMap(),
     };
   }
+}
+
+/**
+ * Builds the full keyboard layout array-of-arrays from KEYBOARD_LAYOUT.
+ * Char keys get an englishKey { normal, shift } from the layoutMap (or fallback).
+ * Special keys keep their label and width.
+ *
+ * @param {KeyboardLayoutMap|null} layoutMap
+ * @returns {Array<Array<Object>>}
+ */
+function buildFullLayout(layoutMap) {
+  // Build a flat lookup: code -> fallback char (for when layoutMap is null)
+  const fallbackLookup = {};
+  KEYBOARD_ROWS.forEach((row, rowIndex) => {
+    row.forEach((code, keyIndex) => {
+      fallbackLookup[code] = FALLBACK_QWERTY_KEYS[rowIndex]?.[keyIndex] ?? code;
+    });
+  });
+
+  return KEYBOARD_LAYOUT.map((row) =>
+    row.map((keyDef) => {
+      if (keyDef.type === "special") {
+        return {
+          code: keyDef.code,
+          type: "special",
+          label: keyDef.label,
+          width: keyDef.width,
+        };
+      }
+
+      // char key
+      const rawChar = layoutMap
+        ? layoutMap.get(keyDef.code)
+        : fallbackLookup[keyDef.code];
+      const normalChar = rawChar
+        ? rawChar.toLowerCase()
+        : (fallbackLookup[keyDef.code] ?? keyDef.code).toLowerCase();
+
+      return {
+        code: keyDef.code,
+        type: "char",
+        englishKey: {
+          normal: normalChar,
+          shift: keyDef.code.startsWith("Key")
+            ? normalChar.toUpperCase()
+            : getShiftVariant(keyDef.code, normalChar),
+        },
+      };
+    }),
+  );
 }
 
 /**

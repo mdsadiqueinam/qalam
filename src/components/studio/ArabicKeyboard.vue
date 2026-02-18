@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
   ChevronDownIcon,
   ArrowLeftIcon,
@@ -12,40 +12,32 @@ import {
   detectKeyboardLayout as detectLayout,
   detectLayoutType as getLayoutType,
   addRegionalInfo,
-  generateFallbackLayout,
 } from "@utils/keyboard";
-import { useKeyModifier } from "@vueuse/core";
+import { useEventListener } from "@vueuse/core";
 
 // --- Props & models
-const emit = defineEmits(["keyPress"]);
-
-// --- Use
-const shiftState = useKeyModifier("Shift");
 
 // --- Vars (ref, reactive)
-const keyboardLayout = ref([]);
-const keyMap = ref({}); // Key map with { normal, shift } for each key
+const keyboardLayout = ref([]); // Array<Array<{ code, type, englishKey?, label?, width? }>>
 const layoutSupported = ref(true);
-const layoutName = ref("QWERTY"); // Detected layout name
+const layoutName = ref("QWERTY");
+const pressedKeys = ref(new Set());
+const shiftState = computed(() => pressedKeys.value.has("Shift"));
 
 // --- Handlers
-function handleKeyPress(char) {
-  emit("keyPress", char);
+function handleKeyPress(_key) {
+  // TODO
 }
 
 async function detectKeyboardLayout() {
   const result = await detectLayout();
 
   layoutSupported.value = result.supported;
-  keyMap.value = result.keyMap || {};
+  keyboardLayout.value = result.layout;
 
-  if (result.supported && result.layout) {
-    keyboardLayout.value = result.layout;
+  if (result.supported && result.layoutMap) {
     const detectedName = getLayoutType(result.layoutMap);
     layoutName.value = addRegionalInfo(detectedName);
-  } else {
-    keyboardLayout.value = generateFallbackLayout();
-    layoutName.value = "QWERTY";
   }
 }
 
@@ -55,17 +47,39 @@ const rowClasses = computed(() => [
   "ml-6", // Row 1: QWERTY
   "ml-8", // Row 2: ASDF
   "ml-12", // Row 3: ZXCV
+  "ml-0", // Row 4: Bottom
 ]);
 
-const hasLeftShift = computed(() => (rowIndex) => rowIndex === 3);
-const hasRightShift = computed(() => (rowIndex) => rowIndex === 3);
-const hasBackspace = computed(() => (rowIndex) => rowIndex === 0);
-const hasEnter = computed(() => (rowIndex) => rowIndex === 2);
-
 // --- Lifecycle
-onMounted(() => {
-  detectKeyboardLayout();
-});
+function onKeyDown(e) {
+  pressedKeys.value = new Set([...pressedKeys.value, e.key]);
+}
+
+function onKeyUp(e) {
+  const next = new Set(pressedKeys.value);
+  next.delete(e.key);
+  pressedKeys.value = next;
+}
+
+function getEnglishKey(key) {
+  if (key.type === "char") {
+    return key.englishKey;
+  }
+  return { normal: key.label, shift: key.label };
+}
+
+function getVariant(key) {
+  if (key.type === "special") {
+    if (pressedKeys.value.has(key.code)) {
+      return "active";
+    }
+    return "special";
+  }
+  return "normal";
+}
+
+useEventListener("keydown", onKeyDown);
+useEventListener("keyup", onKeyUp);
 </script>
 
 <template>
@@ -99,124 +113,57 @@ onMounted(() => {
 
       <!-- Keyboard Layout -->
       <div class="grid gap-1.5 select-none">
-        <!-- Dynamic Rows: Numbers, QWERTY, ASDF, ZXCV -->
         <div
           v-for="(row, rowIndex) in keyboardLayout"
           :key="rowIndex"
           class="flex justify-center gap-1.5"
           :class="rowClasses[rowIndex]"
         >
-          <!-- Left SHIFT key for row 3 (ZXCV row) -->
-          <KeyButton
-            v-if="hasLeftShift(rowIndex)"
-            :englishKey="{ normal: 'SHIFT', shift: 'SHIFT' }"
-            :shift="shiftState"
-            :variant="shiftState ? 'active' : 'special'"
-            width="w-20"
-            @keyPress="handleKeyPress('')"
-          />
-
-          <!-- Regular keys from detected layout -->
           <KeyButton
             v-for="key in row"
             :key="key.code"
-            :englishKey="keyMap[key.code]"
+            :englishKey="getEnglishKey(key)"
             :shift="shiftState"
-            variant="normal"
-            @keyPress="handleKeyPress(key.key)"
+            :variant="getVariant(key)"
+            :width="key.width"
+            @keyPress="handleKeyPress(key)"
           />
 
-          <!-- Row-specific special keys -->
-          <KeyButton
-            v-if="hasBackspace(rowIndex)"
-            :englishKey="{ normal: 'BKSPC', shift: 'BKSPC' }"
-            :shift="shiftState"
-            variant="special"
-            width="w-20"
-            @keyPress="handleKeyPress('BACKSPACE')"
-          />
-          <KeyButton
-            v-if="hasEnter(rowIndex)"
-            :englishKey="{ normal: 'ENTER', shift: 'ENTER' }"
-            :shift="shiftState"
-            variant="special"
-            width="w-24"
-            @keyPress="handleKeyPress('\n')"
-          />
-          <KeyButton
-            v-if="hasRightShift(rowIndex)"
-            :englishKey="{ normal: 'SHIFT', shift: 'SHIFT' }"
-            :shift="shiftState"
-            :variant="shiftState ? 'active' : 'special'"
-            width="w-20"
-            @keyPress="handleKeyPress('')"
-          />
-        </div>
-
-        <!-- Row 4 -->
-        <div class="flex justify-center gap-1.5">
-          <KeyButton
-            :englishKey="{ normal: 'CTRL', shift: 'CTRL' }"
-            :shift="shiftState"
-            variant="special"
-            width="w-20"
-            @keyPress="handleKeyPress('')"
-          />
-          <KeyButton
-            :englishKey="{ normal: 'ALT', shift: 'ALT' }"
-            :shift="shiftState"
-            variant="special"
-            width="w-20"
-            @keyPress="handleKeyPress('')"
-          />
-          <KeyButton
-            :englishKey="{ normal: 'SPACE', shift: 'SPACE' }"
-            :shift="shiftState"
-            variant="special"
-            width="w-96"
-            @keyPress="handleKeyPress(' ')"
-          />
-          <KeyButton
-            :englishKey="{ normal: 'ALT GR', shift: 'ALT GR' }"
-            :shift="shiftState"
-            variant="special"
-            width="w-20"
-            @keyPress="handleKeyPress('')"
-          />
-
-          <!-- Arrow keys -->
-          <div class="flex gap-1">
-            <div class="flex items-center">
-              <button
-                class="keyboard-key flex h-12 w-12 cursor-pointer items-center justify-center rounded-lg border border-divider bg-main-unselected text-main-text-muted transition-all"
-                @click="handleKeyPress('ARROW_LEFT')"
-              >
-                <ArrowLeftIcon class="w-4 h-4" />
-              </button>
+          <!-- Arrow keys (appended to bottom row) -->
+          <template v-if="rowIndex === keyboardLayout.length - 1">
+            <div class="flex gap-1">
+              <div class="flex items-center">
+                <button
+                  class="keyboard-key flex h-12 w-12 cursor-pointer items-center justify-center rounded-lg border border-divider bg-main-unselected text-main-text-muted transition-all"
+                  @click="handleKeyPress('ARROW_LEFT')"
+                >
+                  <ArrowLeftIcon class="w-4 h-4" />
+                </button>
+              </div>
+              <div class="flex flex-col gap-1">
+                <button
+                  class="keyboard-key flex h-5.5 w-12 cursor-pointer items-center justify-center rounded-lg border border-divider bg-main-unselected text-main-text-muted transition-all"
+                  @click="handleKeyPress('ARROW_UP')"
+                >
+                  <ArrowUpIcon class="w-3 h-3" />
+                </button>
+                <button
+                  class="keyboard-key flex h-5.5 w-12 cursor-pointer items-center justify-center rounded-lg border border-divider bg-main-unselected text-main-text-muted transition-all"
+                  @click="handleKeyPress('ARROW_DOWN')"
+                >
+                  <ArrowDownIcon class="w-3 h-3" />
+                </button>
+              </div>
+              <div class="flex items-center">
+                <button
+                  class="keyboard-key flex h-12 w-12 cursor-pointer items-center justify-center rounded-lg border border-divider bg-main-unselected text-main-text-muted transition-all"
+                  @click="handleKeyPress('ARROW_RIGHT')"
+                >
+                  <ArrowRightIcon class="w-4 h-4" />
+                </button>
+              </div>
             </div>
-            <div class="flex flex-col gap-1">
-              <button
-                class="keyboard-key flex h-5.5 w-12 cursor-pointer items-center justify-center rounded-lg border border-divider bg-main-unselected text-main-text-muted transition-all"
-                @click="handleKeyPress('ARROW_UP')"
-              >
-                <ArrowUpIcon class="w-3 h-3" />
-              </button>
-              <button
-                class="keyboard-key flex h-5.5 w-12 cursor-pointer items-center justify-center rounded-lg border border-divider bg-main-unselected text-main-text-muted transition-all"
-                @click="handleKeyPress('ARROW_DOWN')"
-              >
-                <ArrowDownIcon class="w-3 h-3" />
-              </button>
-            </div>
-            <div class="flex items-center">
-              <button
-                class="keyboard-key flex h-12 w-12 cursor-pointer items-center justify-center rounded-lg border border-divider bg-main-unselected text-main-text-muted transition-all"
-                @click="handleKeyPress('ARROW_RIGHT')"
-              >
-                <ArrowRightIcon class="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          </template>
         </div>
       </div>
     </div>
