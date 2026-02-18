@@ -108,50 +108,70 @@ export const FALLBACK_QWERTY_KEYS = [
 ];
 
 /**
- * Arabic character mapping for transliteration
- * Maps physical keyboard keys to Arabic characters
+ * Arabic key mapping keyed by KeyboardEvent.code.
+ * Each entry has:
+ *   - default: Arabic character for the unmodified key
+ *   - shift:   Arabic character (or punctuation) when Shift is held
+ *   - alt:     (optional) alternate Arabic character when Alt is held
  */
-export const ARABIC_KEYBOARD_MAPPING = {
-  // Row 1 (QWERTY)
-  Q: "ض",
-  W: "ص",
-  E: "ث",
-  R: "ق",
-  T: "ف",
-  Y: "غ",
-  U: "ع",
-  I: "ه",
-  O: "خ",
-  P: "ح",
-  "[": "ج",
-  "]": "د",
+export const ARABIC_KEY_MAP = {
+  // Row 0: Number row
+  Backquote: { default: "ذ", shift: "~", alt: "٪" },
+  Digit1: { default: "١", shift: "!" },
+  Digit2: { default: "٢", shift: "@" },
+  Digit3: { default: "٣", shift: "#" },
+  Digit4: { default: "٤", shift: "$" },
+  Digit5: { default: "٥", shift: "%" },
+  Digit6: { default: "٦", shift: "^" },
+  Digit7: { default: "٧", shift: "&" },
+  Digit8: { default: "٨", shift: "*" },
+  Digit9: { default: "٩", shift: "(" },
+  Digit0: { default: "٠", shift: ")" },
 
-  // Row 2 (ASDF)
-  A: "ش",
-  S: "س",
-  D: "ي",
-  F: "ب",
-  G: "ل",
-  H: "ا",
-  J: "ت",
-  K: "ن",
-  L: "م",
-  ";": "ك",
-  "'": "ط",
+  // Row 1: QWERTY row
+  KeyQ: { default: "ض", shift: "َ" },
+  KeyW: { default: "ص", shift: "ً" },
+  KeyE: { default: "ث", shift: "ُ" },
+  KeyR: { default: "ف", shift: "إ", alt: "ڤ" },
+  KeyT: { default: "ق", shift: "لإ" },
+  KeyY: { default: "غ", shift: "إ" },
+  KeyU: { default: "ع", shift: "'" },
+  KeyI: { default: "ه", shift: "÷" },
+  KeyO: { default: "خ", shift: "x" },
+  KeyP: { default: "ح", shift: "؛" },
+  BracketLeft: { default: "ج", shift: "<" },
+  BracketRight: { default: "د", shift: ">" },
 
-  // Row 3 (ZXCV)
-  Z: "ئ",
-  X: "ء",
-  C: "ؤ",
-  V: "ر",
-  B: "لا",
-  N: "ى",
-  M: "ة",
-  ",": "و",
-  ".": "ز",
-  "/": "ظ",
+  // Row 2: ASDF row
+  KeyA: { default: "ش", shift: "ِ" },
+  KeyS: { default: "س", shift: "ٍ" },
+  KeyD: { default: "ي", shift: "ٰ" },
+  KeyF: { default: "ب", shift: "ٖ", alt: "پ" },
+  KeyG: { default: "ل", shift: "أ" },
+  KeyH: { default: "ا", shift: "آ" },
+  KeyJ: { default: "ت", shift: "ـ" },
+  KeyK: { default: "ن", shift: "،" },
+  KeyL: { default: "م", shift: "/" },
+  Semicolon: { default: "ك", shift: ":" },
+  Quote: { default: "ط", shift: '"' },
+
+  // Row 3: ZXCV row
+  KeyZ: { default: "ئ", shift: "ّ" },
+  KeyX: { default: "ء", shift: "ْ" },
+  KeyC: { default: "ؤ", shift: "{" },
+  KeyV: { default: "ر", shift: "}" },
+  KeyB: { default: "لآ", shift: "لأ" },
+  KeyN: { default: "ى", shift: "آ" },
+  KeyM: { default: "ة", shift: "'" },
+  Comma: { default: "و", shift: "," },
+  Period: { default: "ز", shift: "." },
+  Slash: { default: "ظ", shift: "؟" },
 };
 
+/**
+ * English shift-key map for digit/symbol keys.
+ * Used by utils/keyboard.js to resolve englishKey.shift for non-letter keys.
+ */
 export const SHIFT_MAP = {
   Backquote: "~",
   Digit1: "!",

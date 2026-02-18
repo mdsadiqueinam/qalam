@@ -6,10 +6,14 @@ defineProps({
     default: () => ({}),
   },
   arabicKey: {
-    type: Object, // { default: 'ض', shift: 'ض' }
+    type: Object, // { default: 'ض', shift: 'ض', alt?: 'ڤ' }
     default: () => ({}),
   },
   shift: {
+    type: Boolean,
+    default: false,
+  },
+  alt: {
     type: Boolean,
     default: false,
   },
@@ -51,7 +55,13 @@ function handleClick() {
         class="font-serif text-lg font-bold"
         :class="variant === 'active' ? 'text-primary' : 'text-main-text'"
       >
-        {{ shift ? arabicKey.shift || arabicKey.default : arabicKey.default }}
+        {{
+          alt && arabicKey.alt
+            ? arabicKey.alt
+            : shift
+              ? arabicKey.shift || arabicKey.default
+              : arabicKey.default
+        }}
       </span>
 
       <!-- English key hint (top-left) -->
@@ -59,6 +69,14 @@ function handleClick() {
         class="absolute top-1 left-1.5 text-[10px] transition-colors text-main-text-muted group-hover:text-primary/70"
       >
         {{ shift ? englishKey.shift : englishKey.default }}
+      </span>
+
+      <!-- Alt indicator (top-right), shown only when key has an alt variant -->
+      <span
+        v-if="arabicKey.alt"
+        class="absolute top-1 right-1 text-[8px] font-bold text-primary/40 group-hover:text-primary/70 transition-colors"
+      >
+        {{ arabicKey.alt }}
       </span>
     </template>
 

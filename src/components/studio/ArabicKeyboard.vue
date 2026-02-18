@@ -18,13 +18,16 @@ import { useEventListener } from "@vueuse/core";
 // --- Props & models
 
 // --- Vars (ref, reactive)
-const keyboardLayout = ref([]); // Array<Array<{ code, type, englishKey?, label?, width? }>>
+const keyboardLayout = ref([]); // Array<Array<{ code, type, englishKey?, arabicKey?, label?, width? }>>
 const layoutSupported = ref(true);
 const layoutName = ref("QWERTY");
 const pressedKeys = ref(new Set());
 const shiftState = computed(
   () =>
     pressedKeys.value.has("ShiftLeft") || pressedKeys.value.has("ShiftRight"),
+);
+const altState = computed(
+  () => pressedKeys.value.has("AltLeft") || pressedKeys.value.has("AltRight"),
 );
 
 // --- Handlers
@@ -69,6 +72,13 @@ function getEnglishKey(key) {
     return key.englishKey;
   }
   return { default: key.label, shift: key.label };
+}
+
+function getArabicKey(key) {
+  if (key.type === "char" && key.arabicKey) {
+    return key.arabicKey;
+  }
+  return {};
 }
 
 function getVariant(key) {
@@ -128,7 +138,9 @@ detectKeyboardLayout();
             v-for="key in row"
             :key="key.code"
             :englishKey="getEnglishKey(key)"
+            :arabicKey="getArabicKey(key)"
             :shift="shiftState"
+            :alt="altState"
             :variant="getVariant(key)"
             :width="key.width"
             @keyPress="handleKeyPress(key)"

@@ -3,6 +3,7 @@ import {
   KEYBOARD_ROWS,
   FALLBACK_QWERTY_KEYS,
   SHIFT_MAP,
+  ARABIC_KEY_MAP,
 } from "@root/constants/keyboard";
 
 /**
@@ -81,6 +82,8 @@ function buildFullLayout(layoutMap) {
         ? rawChar.toLowerCase()
         : (fallbackLookup[keyDef.code] ?? keyDef.code).toLowerCase();
 
+      const arabicEntry = ARABIC_KEY_MAP[keyDef.code];
+
       return {
         code: keyDef.code,
         type: "char",
@@ -90,6 +93,13 @@ function buildFullLayout(layoutMap) {
             ? defaultChar.toUpperCase()
             : getShiftVariant(keyDef.code, defaultChar),
         },
+        arabicKey: arabicEntry
+          ? {
+              default: arabicEntry.default,
+              shift: arabicEntry.shift,
+              alt: arabicEntry.alt,
+            }
+          : null,
       };
     }),
   );
