@@ -27,7 +27,7 @@ const emit = defineEmits(["edit", "menu"]);
 
 <template>
   <div
-    class="group flex flex-col bg-white dark:bg-background-dark/50 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-transparent hover:border-primary/20 cursor-pointer"
+    class="group flex flex-col bg-white dark:bg-main/50 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-transparent hover:border-primary/20 cursor-pointer"
   >
     <div class="relative aspect-3/4 overflow-hidden">
       <!-- Hover overlay -->

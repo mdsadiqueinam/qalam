@@ -15,9 +15,7 @@ function createBook() {
 </script>
 
 <template>
-  <div
-    class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark"
-  >
+  <div class="flex-1 overflow-y-auto bg-background-light dark:bg-main">
     <div class="max-w-[1200px] mx-auto w-full px-6 py-8">
       <!-- Page Header -->
       <div
