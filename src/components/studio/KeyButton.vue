@@ -2,7 +2,11 @@
 // --- Props & models
 defineProps({
   englishKey: {
-    type: Object, // { normal: 'a', shift: 'A' }
+    type: Object, // { normal: 'q', shift: 'Q' }
+    default: () => ({}),
+  },
+  arabicKey: {
+    type: Object, // { normal: 'ض', shift: 'ض' }
     default: () => ({}),
   },
   shift: {
@@ -40,37 +44,29 @@ function handleClick() {
     ]"
     @click="handleClick"
   >
-    <!-- Main key display - shows normal or shift variant based on shift prop -->
-    <span
-      v-if="englishKey?.normal"
-      class="font-bold text-base"
-      :class="variant === 'active' ? 'text-primary' : 'text-main-text'"
-    >
-      {{ shift ? englishKey.shift : englishKey.normal }}
-    </span>
-
-    <!-- English key hints (small indicators in corners) -->
-    <template v-if="englishKey?.normal && variant === 'normal'">
-      <!-- Shift variant (top-left corner) -->
+    <!-- Normal key: Arabic center + English top-left -->
+    <template v-if="variant === 'normal'">
+      <!-- Arabic character (center) -->
       <span
-        class="absolute top-1 left-1.5 text-[10px] font-semibold transition-colors"
-        :class="
-          variant === 'active'
-            ? 'text-primary/70'
-            : 'text-main-text-muted group-hover:text-primary/70'
-        "
+        class="font-serif text-lg font-bold"
+        :class="variant === 'active' ? 'text-primary' : 'text-main-text'"
       >
-        {{ englishKey.shift }}
+        {{ shift ? arabicKey.shift || arabicKey.normal : arabicKey.normal }}
       </span>
 
-      <!-- Normal variant (bottom-left corner) -->
+      <!-- English key hint (top-left) -->
       <span
-        class="absolute bottom-1 left-1.5 text-[10px] transition-colors"
-        :class="
-          variant === 'active'
-            ? 'text-primary/70'
-            : 'text-main-text-muted group-hover:text-primary/70'
-        "
+        class="absolute top-1 left-1.5 text-[10px] transition-colors text-main-text-muted group-hover:text-primary/70"
+      >
+        {{ shift ? englishKey.shift : englishKey.normal }}
+      </span>
+    </template>
+
+    <!-- Special key: just show the label centered -->
+    <template v-else>
+      <span
+        class="font-bold"
+        :class="[englishKey.normal?.length > 4 ? 'text-[10px]' : 'text-xs']"
       >
         {{ englishKey.normal }}
       </span>

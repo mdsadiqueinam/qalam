@@ -105,7 +105,7 @@ onMounted(() => {
           <!-- Left SHIFT key for row 3 (ZXCV row) -->
           <KeyButton
             v-if="hasLeftShift(rowIndex)"
-            :englishKey="{ normal: 'shift', shift: 'SHIFT' }"
+            :englishKey="{ normal: 'SHIFT', shift: 'SHIFT' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
@@ -123,21 +123,21 @@ onMounted(() => {
           <!-- Row-specific special keys -->
           <KeyButton
             v-if="hasBackspace(rowIndex)"
-            :englishKey="{ normal: 'backspace', shift: 'BACKSPACE' }"
+            :englishKey="{ normal: 'BKSPC', shift: 'BKSPC' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('BACKSPACE')"
           />
           <KeyButton
             v-if="hasEnter(rowIndex)"
-            :englishKey="{ normal: 'enter', shift: 'ENTER' }"
+            :englishKey="{ normal: 'ENTER', shift: 'ENTER' }"
             variant="special"
             width="w-24"
             @keyPress="handleKeyPress('\n')"
           />
           <KeyButton
             v-if="hasRightShift(rowIndex)"
-            :englishKey="{ normal: 'shift', shift: 'SHIFT' }"
+            :englishKey="{ normal: 'SHIFT', shift: 'SHIFT' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
@@ -147,25 +147,25 @@ onMounted(() => {
         <!-- Row 4 -->
         <div class="flex justify-center gap-1.5">
           <KeyButton
-            :englishKey="{ normal: 'ctrl', shift: 'CTRL' }"
+            :englishKey="{ normal: 'CTRL', shift: 'CTRL' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
           />
           <KeyButton
-            :englishKey="{ normal: 'alt', shift: 'ALT' }"
+            :englishKey="{ normal: 'ALT', shift: 'ALT' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
           />
           <KeyButton
-            :englishKey="{ normal: 'space', shift: 'SPACE' }"
+            :englishKey="{ normal: 'SPACE', shift: 'SPACE' }"
             variant="special"
             width="w-96"
             @keyPress="handleKeyPress(' ')"
           />
           <KeyButton
-            :englishKey="{ normal: 'alt gr', shift: 'ALT GR' }"
+            :englishKey="{ normal: 'ALT GR', shift: 'ALT GR' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
