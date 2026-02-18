@@ -23,6 +23,7 @@
     "@unhead/vue": "^2.1.4",
     "dexie": "^4.3.0",
     "dexie-relationships": "^1.2.11",
+    "micromark": "^4.0.2",
     "vue": "^3.5.25",
     "vue-router": "^4.6.4"
   },

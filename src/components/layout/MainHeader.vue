@@ -50,7 +50,12 @@ const tabs = [{ label: "My library", icon: Squares2X2Icon, to: "/" }];
     <div class="flex items-center gap-4">
       <!-- Search bar (hidden on mobile) -->
       <div class="hidden sm:flex items-center h-8 w-48 lg:w-64">
-        <BaseInput v-model="searchQuery" placeholder="Search manuscripts...">
+        <BaseInput
+          v-model="searchQuery"
+          placeholder="Search manuscripts..."
+          size="sm"
+          clearBtn
+        >
           <template #icon>
             <MagnifyingGlassIcon class="w-4 h-4 text-primary/50 shrink-0" />
           </template>
