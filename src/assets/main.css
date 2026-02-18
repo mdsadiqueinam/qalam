@@ -257,3 +257,6 @@
 .spinner {
   @apply w-8 h-8 border-2 border-solid border-primary rounded-full border-t-transparent animate-spin;
 }
+button {
+  @apply cursor-pointer;
+}
