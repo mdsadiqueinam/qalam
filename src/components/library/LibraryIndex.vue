@@ -1,16 +1,21 @@
 <script setup>
+import { ref } from "vue";
 import { useLibrary } from "@composables/useLibrary";
 import LibraryBookCard from "@components/library/LibraryBookCard.vue";
 import LibraryEmptyCard from "@components/library/LibraryEmptyCard.vue";
 import LibraryTabs from "@components/library/LibraryTabs.vue";
+import LibraryCreateBookDialog from "@components/library/LibraryCreateBookDialog.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 import BaseButton from "@shared/components/BaseButton.vue";
 
 // --- Use
 const { activeTab, filteredBooks } = useLibrary();
 
+// --- Vars
+const showCreateDialog = ref(false);
+
 function createBook() {
-  // TODO: open create book dialog
+  showCreateDialog.value = true;
 }
 </script>
 
@@ -59,4 +64,6 @@ function createBook() {
       </div>
     </div>
   </div>
+
+  <LibraryCreateBookDialog v-model="showCreateDialog" />
 </template>

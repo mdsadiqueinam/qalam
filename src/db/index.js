@@ -206,8 +206,11 @@ function setupObjectClasses(db) {
 // ---------------------------------------------------------------------------
 // Transaction logging
 // ---------------------------------------------------------------------------
+const LOG_NO_IMPLEMENTED = true;
 
 async function logTransaction(db, tableName, tableDef, action, obj) {
+  if (LOG_NO_IMPLEMENTED) return;
+
   if (!obj.id)
     throw new Error(
       `[db] No id on record when logging '${action}' for '${tableName}'`,

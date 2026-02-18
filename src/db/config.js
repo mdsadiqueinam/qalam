@@ -4,6 +4,7 @@ const CONFIG = {
     fields: {
       id: { index: true, type: String }, // UUID
       title: { index: false, type: String, required: true },
+      coverImage: { index: false, type: String },
       content: { index: false, type: String },
       createdAt: { index: true, type: Date, required: true },
       updatedAt: { index: true, type: Date, required: true },
