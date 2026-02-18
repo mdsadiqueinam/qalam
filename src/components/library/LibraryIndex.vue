@@ -15,19 +15,17 @@ function createBook() {
 </script>
 
 <template>
-  <div class="flex-1 overflow-y-auto bg-background-light dark:bg-main">
+  <div class="flex-1 overflow-y-auto bg-main">
     <div class="max-w-[1200px] mx-auto w-full px-6 py-8">
       <!-- Page Header -->
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
       >
         <div>
-          <h1
-            class="text-4xl font-bold text-slate-900 dark:text-white font-display mb-2"
-          >
+          <h1 class="text-4xl font-bold text-main-text font-display mb-2">
             My Library
           </h1>
-          <p class="text-slate-500 font-sans">
+          <p class="text-main-text-muted font-sans">
             Manage your Arabic literary projects and manuscripts in one place.
           </p>
         </div>

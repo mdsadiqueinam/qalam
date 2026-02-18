@@ -27,7 +27,7 @@ const emit = defineEmits(["edit", "menu"]);
 
 <template>
   <div
-    class="group flex flex-col bg-white dark:bg-main/50 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-transparent hover:border-primary/20 cursor-pointer"
+    class="group flex flex-col bg-sidebar rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-border-subtle hover:border-primary/20 cursor-pointer"
   >
     <div class="relative aspect-3/4 overflow-hidden">
       <!-- Hover overlay -->
@@ -55,7 +55,7 @@ const emit = defineEmits(["edit", "menu"]);
           @click.stop="emit('menu')"
         >
           <template #icon>
-            <EllipsisVerticalIcon class="w-5 h-5 text-slate-700" />
+            <EllipsisVerticalIcon class="w-5 h-5 text-main-text" />
           </template>
         </BaseButton>
       </div>
@@ -63,11 +63,11 @@ const emit = defineEmits(["edit", "menu"]);
 
     <div class="p-4">
       <h3
-        class="font-bold text-slate-900 dark:text-white leading-tight font-display mb-1 truncate"
+        class="font-bold text-main-text leading-tight font-display mb-1 truncate"
       >
         {{ title }}
       </h3>
-      <p class="text-xs text-slate-500 font-sans">{{ editedAt }}</p>
+      <p class="text-xs text-main-text-muted font-sans">{{ editedAt }}</p>
     </div>
   </div>
 </template>

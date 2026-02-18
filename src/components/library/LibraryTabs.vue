@@ -40,7 +40,7 @@ function selectTab(key) {
         :class="
           modelValue === tab.key
             ? 'border-primary text-primary font-bold'
-            : 'border-transparent text-slate-500 hover:text-primary'
+            : 'border-transparent text-main-text-muted hover:text-primary'
         "
         @click="selectTab(tab.key)"
       >
