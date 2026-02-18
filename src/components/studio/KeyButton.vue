@@ -2,11 +2,11 @@
 // --- Props & models
 defineProps({
   englishKey: {
-    type: Object, // { normal: 'q', shift: 'Q' }
+    type: Object, // { default: 'q', shift: 'Q' }
     default: () => ({}),
   },
   arabicKey: {
-    type: Object, // { normal: 'ض', shift: 'ض' }
+    type: Object, // { default: 'ض', shift: 'ض' }
     default: () => ({}),
   },
   shift: {
@@ -15,7 +15,7 @@ defineProps({
   },
   variant: {
     type: String,
-    default: "normal", // normal, special, active
+    default: "default", // default, special, active
   },
   width: {
     type: String,
@@ -45,20 +45,20 @@ function handleClick() {
     @click="handleClick"
   >
     <!-- Normal key: Arabic center + English top-left -->
-    <template v-if="variant === 'normal'">
+    <template v-if="variant === 'default'">
       <!-- Arabic character (center) -->
       <span
         class="font-serif text-lg font-bold"
         :class="variant === 'active' ? 'text-primary' : 'text-main-text'"
       >
-        {{ shift ? arabicKey.shift || arabicKey.normal : arabicKey.normal }}
+        {{ shift ? arabicKey.shift || arabicKey.default : arabicKey.default }}
       </span>
 
       <!-- English key hint (top-left) -->
       <span
         class="absolute top-1 left-1.5 text-[10px] transition-colors text-main-text-muted group-hover:text-primary/70"
       >
-        {{ shift ? englishKey.shift : englishKey.normal }}
+        {{ shift ? englishKey.shift : englishKey.default }}
       </span>
     </template>
 
@@ -66,9 +66,9 @@ function handleClick() {
     <template v-else>
       <span
         class="font-bold"
-        :class="[englishKey.normal?.length > 4 ? 'text-[10px]' : 'text-xs']"
+        :class="[englishKey.default?.length > 4 ? 'text-[10px]' : 'text-xs']"
       >
-        {{ englishKey.normal }}
+        {{ englishKey.default }}
       </span>
     </template>
   </div>

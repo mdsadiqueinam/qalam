@@ -68,7 +68,7 @@ function getEnglishKey(key) {
   if (key.type === "char") {
     return key.englishKey;
   }
-  return { normal: key.label, shift: key.label };
+  return { default: key.label, shift: key.label };
 }
 
 function getVariant(key) {
@@ -78,7 +78,7 @@ function getVariant(key) {
   if (key.type === "special") {
     return "special";
   }
-  return "normal";
+  return "default";
 }
 
 useEventListener("keydown", onKeyDown);
