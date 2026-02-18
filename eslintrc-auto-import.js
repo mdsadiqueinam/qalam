@@ -202,6 +202,7 @@ export default {
     "useIntervalFn": true,
     "useKeyModifier": true,
     "useLastChanged": true,
+    "useLibrary": true,
     "useLocalStorage": true,
     "useMagicKeys": true,
     "useManualRefHistory": true,
