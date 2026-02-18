@@ -14,9 +14,13 @@ import {
   addRegionalInfo,
   generateFallbackLayout,
 } from "@utils/keyboard";
+import { useKeyModifier } from "@vueuse/core";
 
 // --- Props & models
 const emit = defineEmits(["keyPress"]);
+
+// --- Use
+const shiftState = useKeyModifier("Shift");
 
 // --- Vars (ref, reactive)
 const keyboardLayout = ref([]);
@@ -106,7 +110,8 @@ onMounted(() => {
           <KeyButton
             v-if="hasLeftShift(rowIndex)"
             :englishKey="{ normal: 'SHIFT', shift: 'SHIFT' }"
-            variant="special"
+            :shift="shiftState"
+            :variant="shiftState ? 'active' : 'special'"
             width="w-20"
             @keyPress="handleKeyPress('')"
           />
@@ -116,6 +121,7 @@ onMounted(() => {
             v-for="key in row"
             :key="key.code"
             :englishKey="keyMap[key.code]"
+            :shift="shiftState"
             variant="normal"
             @keyPress="handleKeyPress(key.key)"
           />
@@ -124,6 +130,7 @@ onMounted(() => {
           <KeyButton
             v-if="hasBackspace(rowIndex)"
             :englishKey="{ normal: 'BKSPC', shift: 'BKSPC' }"
+            :shift="shiftState"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('BACKSPACE')"
@@ -131,6 +138,7 @@ onMounted(() => {
           <KeyButton
             v-if="hasEnter(rowIndex)"
             :englishKey="{ normal: 'ENTER', shift: 'ENTER' }"
+            :shift="shiftState"
             variant="special"
             width="w-24"
             @keyPress="handleKeyPress('\n')"
@@ -138,6 +146,7 @@ onMounted(() => {
           <KeyButton
             v-if="hasRightShift(rowIndex)"
             :englishKey="{ normal: 'SHIFT', shift: 'SHIFT' }"
+            :shift="shiftState"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
@@ -148,24 +157,28 @@ onMounted(() => {
         <div class="flex justify-center gap-1.5">
           <KeyButton
             :englishKey="{ normal: 'CTRL', shift: 'CTRL' }"
+            :shift="shiftState"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
           />
           <KeyButton
             :englishKey="{ normal: 'ALT', shift: 'ALT' }"
+            :shift="shiftState"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
           />
           <KeyButton
             :englishKey="{ normal: 'SPACE', shift: 'SPACE' }"
+            :shift="shiftState"
             variant="special"
             width="w-96"
             @keyPress="handleKeyPress(' ')"
           />
           <KeyButton
             :englishKey="{ normal: 'ALT GR', shift: 'ALT GR' }"
+            :shift="shiftState"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
