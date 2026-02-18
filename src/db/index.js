@@ -8,6 +8,30 @@ import CONFIG from "./config";
 // Schema generation
 // ---------------------------------------------------------------------------
 
+const CONFIG_HASH_KEY = "qalamDb:configHash";
+
+/**
+ * Fast djb2 string hash — synchronous, no crypto API needed.
+ * Returns a hex string.
+ */
+function hashConfig(config) {
+  const str = JSON.stringify(config);
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) ^ str.charCodeAt(i);
+    hash |= 0; // keep 32-bit signed int
+  }
+  return (hash >>> 0).toString(16); // unsigned hex
+}
+
+function getStoredConfigHash() {
+  return localStorage.getItem(CONFIG_HASH_KEY);
+}
+
+function storeConfigHash(hash) {
+  localStorage.setItem(CONFIG_HASH_KEY, hash);
+}
+
 /**
  * Builds the Dexie stores object from CONFIG.
  * Each table entry becomes either its `customIndex` string or a
@@ -96,10 +120,20 @@ let _db = null;
 
 /**
  * Initialises (or returns the cached) Dexie database instance.
- * Call this once at application startup, then import `db` wherever needed.
+ * If the CONFIG schema has changed since the last run (detected via a hash
+ * stored in localStorage), the existing database is wiped before a fresh
+ * one is created — keeping the schema in sync without manual migrations.
  */
-export function initDb() {
+export async function initDb() {
   if (_db) return _db;
+
+  const currentHash = hashConfig(CONFIG);
+  const storedHash = getStoredConfigHash();
+
+  if (storedHash !== null && storedHash !== currentHash) {
+    // Schema changed — delete the stale database before recreating.
+    await Dexie.delete("qalamDb");
+  }
 
   _db = new Dexie("qalamDb", { addons: [relationships] });
 
@@ -110,6 +144,8 @@ export function initDb() {
   });
 
   setupObjectClasses(_db);
+
+  storeConfigHash(currentHash);
 
   return _db;
 }
@@ -276,4 +312,12 @@ async function logTransaction(db, tableName, tableDef, action, obj) {
  *   TransactionQueueItem: any
  * }}
  */
-export const db = initDb();
+export let db = null;
+
+/**
+ * Resolves once the database is ready (schema-change detection complete).
+ * Await this in main.js before mounting the app so `db` is always populated.
+ */
+export const dbReady = initDb().then((instance) => {
+  db = instance;
+});
