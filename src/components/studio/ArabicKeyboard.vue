@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
   ChevronDownIcon,
   ArrowLeftIcon,
@@ -8,17 +8,15 @@ import {
   ArrowDownIcon,
 } from "@heroicons/vue/24/outline";
 import KeyButton from "@components/studio/KeyButton.vue";
-import { KEYBOARD_ROWS, FALLBACK_QWERTY_KEYS } from "@root/constants/keyboard";
+import {
+  detectKeyboardLayout as detectLayout,
+  detectLayoutType as getLayoutType,
+  addRegionalInfo,
+  generateFallbackLayout,
+} from "@utils/keyboard";
 
 // --- Props & models
-defineProps({
-  visible: {
-    type: Boolean,
-    default: true,
-  },
-});
-
-const emit = defineEmits(["keyPress", "toggle"]);
+const emit = defineEmits(["keyPress"]);
 
 // --- Vars (ref, reactive)
 const keyboardLayout = ref([]);
@@ -30,101 +28,33 @@ function handleKeyPress(char) {
   emit("keyPress", char);
 }
 
-function handleToggle() {
-  emit("toggle");
-}
-
 async function detectKeyboardLayout() {
-  // Check if Keyboard API is supported
-  if (!("keyboard" in navigator) || !navigator.keyboard.getLayoutMap) {
-    console.warn("Keyboard API not supported, using fallback");
-    layoutSupported.value = false;
-    useFallbackLayout();
-    return;
-  }
+  const result = await detectLayout();
 
-  try {
-    const layoutMap = await navigator.keyboard.getLayoutMap();
+  layoutSupported.value = result.supported;
 
-    // Build keyboard layout from the detected layout
-    keyboardLayout.value = KEYBOARD_ROWS.map((row) => {
-      return row.map((code) => {
-        const key =
-          layoutMap.get(code) || code.replace(/^Key/, "").replace(/^Digit/, "");
-        return {
-          code,
-          key: key.toUpperCase(),
-          display: key.toUpperCase(),
-        };
-      });
-    });
-
-    // Detect layout type by checking key positions
-    detectLayoutType(layoutMap);
-  } catch (error) {
-    console.error("Error detecting keyboard layout:", error);
-    layoutSupported.value = false;
-    useFallbackLayout();
-  }
-}
-
-function detectLayoutType(layoutMap) {
-  // Check specific keys to determine layout type
-  const keyQ = layoutMap.get("KeyQ");
-  const keyW = layoutMap.get("KeyW");
-  const keyE = layoutMap.get("KeyE");
-  const keyA = layoutMap.get("KeyA");
-  const keyS = layoutMap.get("KeyS");
-  const keyD = layoutMap.get("KeyD");
-  const keyF = layoutMap.get("KeyF");
-  const keyY = layoutMap.get("KeyY");
-  const keyZ = layoutMap.get("KeyZ");
-
-  // AZERTY (French)
-  if (keyA === "q" && keyQ === "a" && keyZ === "w") {
-    layoutName.value = "AZERTY";
-  }
-  // QWERTZ (German)
-  else if (keyZ === "y" && keyY === "z") {
-    layoutName.value = "QWERTZ";
-  }
-  // DVORAK
-  else if (keyQ === "'" && keyW === "," && keyE === ".") {
-    layoutName.value = "DVORAK";
-  }
-  // Colemak
-  else if (keyS === "r" && keyD === "s" && keyF === "t") {
-    layoutName.value = "COLEMAK";
-  }
-  // QWERTY (default)
-  else if (keyQ === "q" && keyW === "w") {
+  if (result.supported && result.layout) {
+    keyboardLayout.value = result.layout;
+    const detectedName = getLayoutType(result.layoutMap);
+    layoutName.value = addRegionalInfo(detectedName);
+  } else {
+    keyboardLayout.value = generateFallbackLayout();
     layoutName.value = "QWERTY";
   }
-  // Unknown
-  else {
-    layoutName.value = "UNKNOWN";
-  }
-
-  // Try to get locale for more specific info
-  const locale = navigator.language || navigator.userLanguage;
-  if (locale) {
-    const region = locale.split("-")[1]?.toUpperCase();
-    if (region && layoutName.value === "QWERTY") {
-      layoutName.value = `QWERTY (${region})`;
-    }
-  }
 }
 
-function useFallbackLayout() {
-  // Fallback to standard QWERTY layout
-  keyboardLayout.value = FALLBACK_QWERTY_KEYS.map((row, rowIndex) => {
-    return row.map((key, keyIndex) => ({
-      code: KEYBOARD_ROWS[rowIndex][keyIndex],
-      key,
-      display: key,
-    }));
-  });
-}
+// --- Computed
+const rowClasses = computed(() => [
+  "ml-0", // Row 0: Numbers
+  "ml-6", // Row 1: QWERTY
+  "ml-8", // Row 2: ASDF
+  "ml-12", // Row 3: ZXCV
+]);
+
+const hasLeftShift = computed(() => (rowIndex) => rowIndex === 3);
+const hasRightShift = computed(() => (rowIndex) => rowIndex === 3);
+const hasBackspace = computed(() => (rowIndex) => rowIndex === 0);
+const hasEnter = computed(() => (rowIndex) => rowIndex === 2);
 
 // --- Lifecycle
 onMounted(() => {
@@ -134,7 +64,6 @@ onMounted(() => {
 
 <template>
   <div
-    v-if="visible"
     class="bg-sidebar border-t border-divider p-4 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
   >
     <div class="mx-auto max-w-5xl">
@@ -155,7 +84,6 @@ onMounted(() => {
         <div class="flex gap-2">
           <button
             class="flex items-center gap-1 text-xs font-medium text-main-text-muted hover:text-primary transition-colors"
-            @click="handleToggle"
           >
             <ChevronDownIcon class="w-4 h-4" />
             Hide
@@ -170,16 +98,11 @@ onMounted(() => {
           v-for="(row, rowIndex) in keyboardLayout"
           :key="rowIndex"
           class="flex justify-center gap-1.5"
-          :class="{
-            'ml-0': rowIndex === 0,
-            'ml-6': rowIndex === 1,
-            'ml-8': rowIndex === 2,
-            'ml-12': rowIndex === 3,
-          }"
+          :class="rowClasses[rowIndex]"
         >
-          <!-- SHIFT key for row 4 (bottom row) -->
+          <!-- Left SHIFT key for row 3 (ZXCV row) -->
           <KeyButton
-            v-if="rowIndex === 3"
+            v-if="hasLeftShift(rowIndex)"
             label="SHIFT"
             variant="special"
             width="w-20"
@@ -197,18 +120,25 @@ onMounted(() => {
 
           <!-- Row-specific special keys -->
           <KeyButton
-            v-if="rowIndex === 0"
+            v-if="hasBackspace(rowIndex)"
             label="BKSPC"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('BACKSPACE')"
           />
           <KeyButton
-            v-if="rowIndex === 2"
+            v-if="hasEnter(rowIndex)"
             label="ENTER"
             variant="special"
             width="w-24"
             @keyPress="handleKeyPress('\n')"
+          />
+          <KeyButton
+            v-if="hasRightShift(rowIndex)"
+            label="SHIFT"
+            variant="special"
+            width="w-20"
+            @keyPress="handleKeyPress('')"
           />
         </div>
 
