@@ -1,6 +1,6 @@
 /**
  * Keyboard Layout Constants
- * 
+ *
  * Standard keyboard scan codes organized by physical rows.
  * Used for detecting and rendering keyboard layouts via the Keyboard API.
  */
@@ -126,4 +126,28 @@ export const ARABIC_KEYBOARD_MAPPING = {
   ",": "و",
   ".": "ز",
   "/": "ظ",
+};
+
+export const SHIFT_MAP = {
+  Backquote: "~",
+  Digit1: "!",
+  Digit2: "@",
+  Digit3: "#",
+  Digit4: "$",
+  Digit5: "%",
+  Digit6: "^",
+  Digit7: "&",
+  Digit8: "*",
+  Digit9: "(",
+  Digit0: ")",
+  Minus: "_",
+  Equal: "+",
+  BracketLeft: "{",
+  BracketRight: "}",
+  Backslash: "|",
+  Semicolon: ":",
+  Quote: '"',
+  Comma: "<",
+  Period: ">",
+  Slash: "?",
 };

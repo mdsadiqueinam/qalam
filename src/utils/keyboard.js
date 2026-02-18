@@ -1,8 +1,12 @@
-import { KEYBOARD_ROWS, FALLBACK_QWERTY_KEYS } from "@root/constants/keyboard";
+import {
+  KEYBOARD_ROWS,
+  FALLBACK_QWERTY_KEYS,
+  SHIFT_MAP,
+} from "@root/constants/keyboard";
 
 /**
  * Detects the current keyboard layout using the Keyboard API
- * @returns {Promise<Object>} Layout detection result with layout map and support status
+ * @returns {Promise<Object>} Layout detection result with layout map, key map, and support status
  */
 export async function detectKeyboardLayout() {
   // Check if Keyboard API is supported
@@ -12,6 +16,7 @@ export async function detectKeyboardLayout() {
       supported: false,
       layoutMap: null,
       layout: null,
+      keyMap: generateFallbackKeyMap(),
     };
   }
 
@@ -31,10 +36,13 @@ export async function detectKeyboardLayout() {
       });
     });
 
+    const keyMap = generateKeyMap(layoutMap);
+
     return {
       supported: true,
       layoutMap,
       layout,
+      keyMap,
     };
   } catch (error) {
     console.error("Error detecting keyboard layout:", error);
@@ -42,6 +50,7 @@ export async function detectKeyboardLayout() {
       supported: false,
       layoutMap: null,
       layout: null,
+      keyMap: generateFallbackKeyMap(),
     };
   }
 }
@@ -119,4 +128,78 @@ export function generateFallbackLayout() {
       display: key,
     }));
   });
+}
+
+/**
+ * Generates a complete key map with normal and shift variants
+ * @param {KeyboardLayoutMap} layoutMap - The keyboard layout map from Keyboard API
+ * @returns {Object} Key map object with structure: { code: { normal: 'char', shift: 'CHAR' } }
+ */
+export function generateKeyMap(layoutMap) {
+  if (!layoutMap) {
+    return generateFallbackKeyMap();
+  }
+
+  const keyMap = {};
+
+  // Process all keyboard rows
+  KEYBOARD_ROWS.flat().forEach((code) => {
+    const normalKey = layoutMap.get(code);
+
+    if (normalKey) {
+      // For letter keys, shift is uppercase
+      if (code.startsWith("Key")) {
+        keyMap[code] = {
+          normal: normalKey.toLowerCase(),
+          shift: normalKey.toUpperCase(),
+        };
+      }
+      // For digit and symbol keys, we need to infer shift variants
+      else {
+        keyMap[code] = {
+          normal: normalKey,
+          shift: getShiftVariant(code, normalKey),
+        };
+      }
+    }
+  });
+
+  return keyMap;
+}
+
+/**
+ * Gets the shift variant for a key based on standard keyboard layouts
+ * @param {string} code - Key code
+ * @param {string} normalKey - Normal key character
+ * @returns {string} Shift variant character
+ */
+function getShiftVariant(code, normalKey) {
+  // Standard US QWERTY shift mappings
+
+  // Return mapped shift variant or uppercase for unknown
+  return SHIFT_MAP[code] || normalKey.toUpperCase();
+}
+
+/**
+ * Generates fallback key map for QWERTY layout
+ * @returns {Object} Fallback key map
+ */
+function generateFallbackKeyMap() {
+  const keyMap = {};
+
+  // Flatten keyboard rows and map with fallback keys
+  KEYBOARD_ROWS.forEach((row, rowIndex) => {
+    row.forEach((code, keyIndex) => {
+      const normalKey = FALLBACK_QWERTY_KEYS[rowIndex][keyIndex];
+
+      keyMap[code] = {
+        normal: normalKey.toLowerCase(),
+        shift: code.startsWith("Key")
+          ? normalKey.toUpperCase()
+          : getShiftVariant(code, normalKey),
+      };
+    });
+  });
+
+  return keyMap;
 }
