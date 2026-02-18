@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed } from "vue";
 import {
   ChevronDownIcon,
   ArrowLeftIcon,
@@ -22,7 +22,10 @@ const keyboardLayout = ref([]); // Array<Array<{ code, type, englishKey?, label?
 const layoutSupported = ref(true);
 const layoutName = ref("QWERTY");
 const pressedKeys = ref(new Set());
-const shiftState = computed(() => pressedKeys.value.has("Shift"));
+const shiftState = computed(
+  () =>
+    pressedKeys.value.has("ShiftLeft") || pressedKeys.value.has("ShiftRight"),
+);
 
 // --- Handlers
 function handleKeyPress(_key) {
@@ -52,12 +55,12 @@ const rowClasses = computed(() => [
 
 // --- Lifecycle
 function onKeyDown(e) {
-  pressedKeys.value = new Set([...pressedKeys.value, e.key]);
+  pressedKeys.value = new Set([...pressedKeys.value, e.code]);
 }
 
 function onKeyUp(e) {
   const next = new Set(pressedKeys.value);
-  next.delete(e.key);
+  next.delete(e.code);
   pressedKeys.value = next;
 }
 
@@ -69,10 +72,10 @@ function getEnglishKey(key) {
 }
 
 function getVariant(key) {
+  if (pressedKeys.value.has(key.code)) {
+    return "active";
+  }
   if (key.type === "special") {
-    if (pressedKeys.value.has(key.code)) {
-      return "active";
-    }
     return "special";
   }
   return "normal";
@@ -80,6 +83,8 @@ function getVariant(key) {
 
 useEventListener("keydown", onKeyDown);
 useEventListener("keyup", onKeyUp);
+
+detectKeyboardLayout();
 </script>
 
 <template>
