@@ -1,5 +1,5 @@
 <script setup>
-import { BookOpenIcon } from "@heroicons/vue/outline";
+import { BookOpenIcon } from "@heroicons/vue/24/outline";
 import ThemeToggle from "@components/common/ThemeToggle.vue";
 </script>
 

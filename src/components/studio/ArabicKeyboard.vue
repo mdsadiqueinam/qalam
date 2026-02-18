@@ -1,5 +1,11 @@
 <script setup>
-import { ChevronDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon, ArrowDownIcon } from "@heroicons/vue/outline";
+import {
+  ChevronDownIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+} from "@heroicons/vue/24/outline";
 import KeyButton from "@components/studio/KeyButton.vue";
 
 // --- Props & models
@@ -10,11 +16,11 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["key-press", "toggle"]);
+const emit = defineEmits(["keyPress", "toggle"]);
 
 // --- Handlers
 function handleKeyPress(char) {
-  emit("key-press", char);
+  emit("keyPress", char);
 }
 
 function handleToggle() {
@@ -106,7 +112,7 @@ const row3 = [
             :arabicChar="key.arabic"
             :englishKey="key.english"
             :variant="key.active ? 'active' : 'normal'"
-            @key-press="handleKeyPress(key.arabic)"
+            @keyPress="handleKeyPress(key.arabic)"
           />
         </div>
 
@@ -118,13 +124,13 @@ const row3 = [
             :arabicChar="key.arabic"
             :englishKey="key.english"
             :variant="key.active ? 'active' : 'normal'"
-            @key-press="handleKeyPress(key.arabic)"
+            @keyPress="handleKeyPress(key.arabic)"
           />
           <KeyButton
             label="ENTER"
             variant="special"
             width="w-20"
-            @key-press="handleKeyPress('\n')"
+            @keyPress="handleKeyPress('\n')"
           />
         </div>
 
@@ -134,20 +140,20 @@ const row3 = [
             label="SHIFT"
             variant="special"
             width="w-20"
-            @key-press="handleKeyPress('')"
+            @keyPress="handleKeyPress('')"
           />
           <KeyButton
             v-for="key in row3"
             :key="key.english"
             :arabicChar="key.arabic"
             :englishKey="key.english"
-            @key-press="handleKeyPress(key.arabic)"
+            @keyPress="handleKeyPress(key.arabic)"
           />
           <KeyButton
             label="BACKSPACE"
             variant="special"
             width="w-28"
-            @key-press="handleKeyPress('BACKSPACE')"
+            @keyPress="handleKeyPress('BACKSPACE')"
           />
         </div>
 
@@ -157,25 +163,25 @@ const row3 = [
             label="CTRL"
             variant="special"
             width="w-20"
-            @key-press="handleKeyPress('')"
+            @keyPress="handleKeyPress('')"
           />
           <KeyButton
             label="ALT"
             variant="special"
             width="w-20"
-            @key-press="handleKeyPress('')"
+            @keyPress="handleKeyPress('')"
           />
           <KeyButton
             label="SPACE"
             variant="special"
             width="w-96"
-            @key-press="handleKeyPress(' ')"
+            @keyPress="handleKeyPress(' ')"
           />
           <KeyButton
             label="ALT GR"
             variant="special"
             width="w-20"
-            @key-press="handleKeyPress('')"
+            @keyPress="handleKeyPress('')"
           />
 
           <!-- Arrow keys -->

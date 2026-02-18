@@ -1,5 +1,15 @@
 <template>
-  <RouterView />
+  <div class="flex flex-col h-screen overflow-hidden">
+    <MainHeader />
+
+    <main class="flex-1 flex overflow-hidden">
+      <MainSidebar />
+
+      <RouterView />
+    </main>
+
+    <MainFooter />
+  </div>
 </template>
 
 <script setup>

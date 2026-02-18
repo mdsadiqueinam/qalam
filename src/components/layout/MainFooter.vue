@@ -1,5 +1,5 @@
 <script setup>
-import { LanguageIcon, DocumentTextIcon } from "@heroicons/vue/outline";
+import { LanguageIcon, DocumentTextIcon } from "@heroicons/vue/24/outline";
 
 // --- Props & models
 defineProps({

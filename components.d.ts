@@ -11,8 +11,18 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ArabicKeyboard: typeof import('./src/components/studio/ArabicKeyboard.vue')['default']
+    EditorCanvas: typeof import('./src/components/studio/EditorCanvas.vue')['default']
+    EditorToolbar: typeof import('./src/components/studio/EditorToolbar.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    KeyButton: typeof import('./src/components/studio/KeyButton.vue')['default']
+    MainFooter: typeof import('./src/components/layout/MainFooter.vue')['default']
+    MainHeader: typeof import('./src/components/layout/MainHeader.vue')['default']
+    MainSidebar: typeof import('./src/components/layout/MainSidebar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    StudioHome: typeof import('./src/components/studio/StudioHome.vue')['default']
+    StudioIndex: typeof import('./src/components/studio/StudioIndex.vue')['default']
+    ThemeToggle: typeof import('./src/components/common/ThemeToggle.vue')['default']
   }
 }

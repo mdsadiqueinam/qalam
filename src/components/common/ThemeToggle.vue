@@ -1,6 +1,6 @@
 <script setup>
 import { useDark, useToggle } from "@vueuse/core";
-import { SunIcon, MoonIcon } from "@heroicons/vue/outline";
+import { SunIcon, MoonIcon } from "@heroicons/vue/24/outline";
 
 // --- Use (composables/utils)
 const isDark = useDark();

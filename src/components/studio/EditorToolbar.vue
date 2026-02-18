@@ -4,7 +4,7 @@ import {
   Bars3CenterLeftIcon,
   Bars3BottomLeftIcon,
   ListBulletIcon,
-} from "@heroicons/vue/outline";
+} from "@heroicons/vue/24/outline";
 
 // --- Props & models
 defineProps({

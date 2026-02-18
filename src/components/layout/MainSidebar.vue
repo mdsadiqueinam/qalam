@@ -5,7 +5,7 @@ import {
   FolderOpenIcon,
   ChartBarIcon,
   Cog6ToothIcon,
-} from "@heroicons/vue/outline";
+} from "@heroicons/vue/24/outline";
 
 // --- Props & models
 defineProps({

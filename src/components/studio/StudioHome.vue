@@ -39,7 +39,12 @@ function handleFontChange(font) {
 function handleKeyPress(char) {
   if (char === "BACKSPACE") {
     editorText.value = editorText.value.slice(0, -1);
-  } else if (char === "ARROW_LEFT" || char === "ARROW_RIGHT" || char === "ARROW_UP" || char === "ARROW_DOWN") {
+  } else if (
+    char === "ARROW_LEFT" ||
+    char === "ARROW_RIGHT" ||
+    char === "ARROW_UP" ||
+    char === "ARROW_DOWN"
+  ) {
     // Arrow keys - would need cursor position tracking for full implementation
     console.log("Arrow key:", char);
   } else if (char) {
@@ -64,7 +69,7 @@ function handleToggleKeyboard() {
           :selectedFont="selectedFont"
           :wordCount="wordCount"
           @align="handleAlign"
-          @font-change="handleFontChange"
+          @fontChange="handleFontChange"
           @format="handleFormat"
           @list="handleList"
         />
@@ -77,7 +82,7 @@ function handleToggleKeyboard() {
     <!-- On-Screen Keyboard -->
     <ArabicKeyboard
       :visible="keyboardVisible"
-      @key-press="handleKeyPress"
+      @keyPress="handleKeyPress"
       @toggle="handleToggleKeyboard"
     />
   </main>

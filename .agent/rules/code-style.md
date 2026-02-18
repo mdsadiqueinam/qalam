@@ -174,7 +174,7 @@ export function useMyComposable() {
 <script setup>
 import { SearchIcon, UserIcon } from "@heroicons/vue/solid";
 // or outline version
-import { SearchIcon } from "@heroicons/vue/outline";
+import { SearchIcon } from "@heroicons/vue/24/outline";
 </script>
 
 <template>
