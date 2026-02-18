@@ -5,6 +5,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/vue/24/outline";
 import ThemeToggle from "@components/common/ThemeToggle.vue";
+import BaseInput from "@shared/components/BaseInput.vue";
 import { ref } from "vue";
 
 // --- Vars
@@ -48,18 +49,13 @@ const tabs = [{ label: "My library", icon: Squares2X2Icon, to: "/" }];
 
     <div class="flex items-center gap-4">
       <!-- Search bar (hidden on mobile) -->
-      <label class="hidden sm:flex items-center h-8 w-48 lg:w-64">
-        <div
-          class="flex w-full items-center rounded-lg bg-primary/5 border border-primary/10 focus-within:border-primary transition-all px-2 gap-2 h-full"
-        >
-          <MagnifyingGlassIcon class="w-4 h-4 text-primary/50 shrink-0" />
-          <input
-            v-model="searchQuery"
-            class="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-sm text-sidebar-text placeholder:text-primary/40 font-sans"
-            placeholder="Search manuscripts..."
-          />
-        </div>
-      </label>
+      <div class="hidden sm:flex items-center h-8 w-48 lg:w-64">
+        <BaseInput v-model="searchQuery" placeholder="Search manuscripts...">
+          <template #icon>
+            <MagnifyingGlassIcon class="w-4 h-4 text-primary/50 shrink-0" />
+          </template>
+        </BaseInput>
+      </div>
 
       <!-- Teleport target for dynamic header content -->
       <div id="header-content" class="flex items-center gap-4"></div>

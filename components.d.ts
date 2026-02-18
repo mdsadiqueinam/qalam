@@ -12,7 +12,9 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ArabicKeyboard: typeof import('./src/components/studio/ArabicKeyboard.vue')['default']
+    BaseButton: typeof import('./resources/js/shared/components/BaseButton.vue')['default']
     BaseDialog: typeof import('./resources/js/shared/components/BaseDialog.vue')['default']
+    BaseInput: typeof import('./resources/js/shared/components/BaseInput.vue')['default']
     EditorCanvas: typeof import('./src/components/studio/EditorCanvas.vue')['default']
     EditorToolbar: typeof import('./src/components/studio/EditorToolbar.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']

@@ -3,10 +3,15 @@ import { useLibrary } from "@composables/useLibrary";
 import LibraryBookCard from "@components/library/LibraryBookCard.vue";
 import LibraryEmptyCard from "@components/library/LibraryEmptyCard.vue";
 import LibraryTabs from "@components/library/LibraryTabs.vue";
-import { PlusIcon, ChevronDownIcon } from "@heroicons/vue/24/outline";
+import { PlusIcon } from "@heroicons/vue/24/outline";
+import BaseButton from "@shared/components/BaseButton.vue";
 
 // --- Use
-const { activeTab, filteredBooks, loadMore, createBook } = useLibrary();
+const { activeTab, filteredBooks } = useLibrary();
+
+function createBook() {
+  // TODO: open create book dialog
+}
 </script>
 
 <template>
@@ -28,13 +33,12 @@ const { activeTab, filteredBooks, loadMore, createBook } = useLibrary();
             Manage your Arabic literary projects and manuscripts in one place.
           </p>
         </div>
-        <button
-          class="flex items-center justify-center gap-2 rounded-lg h-12 px-6 bg-primary text-white font-bold font-sans hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
-          @click="createBook"
-        >
-          <PlusIcon class="w-5 h-5" />
+        <BaseButton @click="createBook">
+          <template #icon>
+            <PlusIcon class="w-5 h-5" />
+          </template>
           <span>Create New Book</span>
-        </button>
+        </BaseButton>
       </div>
 
       <!-- Tabs -->
@@ -56,17 +60,6 @@ const { activeTab, filteredBooks, loadMore, createBook } = useLibrary();
           :coverUrl="book.coverUrl"
           :coverAlt="book.coverAlt"
         />
-      </div>
-
-      <!-- Load More -->
-      <div class="mt-12 flex justify-center font-sans">
-        <button
-          class="flex items-center gap-2 px-6 py-3 bg-white dark:bg-background-dark/50 border border-primary/20 rounded-lg text-primary font-bold hover:bg-primary/5 transition-colors"
-          @click="loadMore"
-        >
-          Load More Books
-          <ChevronDownIcon class="w-4 h-4" />
-        </button>
       </div>
     </div>
   </div>

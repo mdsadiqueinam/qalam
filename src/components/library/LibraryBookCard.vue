@@ -1,5 +1,6 @@
 <script setup>
 import { EllipsisVerticalIcon } from "@heroicons/vue/24/outline";
+import BaseButton from "@shared/components/BaseButton.vue";
 
 // --- Props & models
 defineProps({
@@ -33,12 +34,9 @@ const emit = defineEmits(["edit", "menu"]);
       <div
         class="absolute inset-0 bg-linear-to-t from-black/60 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4"
       >
-        <button
-          class="bg-white text-primary px-4 py-2 rounded-lg font-bold text-sm w-full font-sans"
-          @click.stop="emit('edit')"
-        >
+        <BaseButton class="w-full" size="md" @click.stop="emit('edit')">
           Edit Manuscript
-        </button>
+        </BaseButton>
       </div>
 
       <!-- Cover image -->
@@ -50,12 +48,16 @@ const emit = defineEmits(["edit", "menu"]);
 
       <!-- Three-dot menu -->
       <div class="absolute top-2 right-2 z-20">
-        <button
-          class="p-1 rounded bg-white/80 text-slate-700 hover:bg-white transition-colors"
+        <BaseButton
+          iconOnly
+          variant="transparent"
+          class="bg-white/80! hover:bg-white!"
           @click.stop="emit('menu')"
         >
-          <EllipsisVerticalIcon class="w-5 h-5" />
-        </button>
+          <template #icon>
+            <EllipsisVerticalIcon class="w-5 h-5 text-slate-700" />
+          </template>
+        </BaseButton>
       </div>
     </div>
 

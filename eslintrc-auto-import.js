@@ -169,6 +169,8 @@ export default {
     "useDeviceOrientation": true,
     "useDevicePixelRatio": true,
     "useDevicesList": true,
+    "useDexieLiveQuery": true,
+    "useDexieLiveQueryWithDeps": true,
     "useDisplayMedia": true,
     "useDocumentVisibility": true,
     "useDraggable": true,
