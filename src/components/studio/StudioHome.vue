@@ -42,7 +42,7 @@ function handleKeyPress(key) {
 </script>
 
 <template>
-  <main class="flex flex-1 flex-col bg-main overflow-hidden">
+  <div class="flex flex-1 flex-col bg-main overflow-hidden">
     <!-- Text Editor Area -->
     <div class="flex flex-1 flex-col p-6 overflow-hidden">
       <div
@@ -62,5 +62,5 @@ function handleKeyPress(key) {
 
     <!-- On-Screen Keyboard -->
     <ArabicKeyboard @keyPress="handleKeyPress" />
-  </main>
+  </div>
 </template>

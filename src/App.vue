@@ -2,7 +2,7 @@
   <div class="flex flex-col h-screen overflow-hidden">
     <MainHeader />
 
-    <main class="flex-1 overflow-hidden">
+    <main class="flex flex-1 overflow-hidden">
       <RouterView />
     </main>
 

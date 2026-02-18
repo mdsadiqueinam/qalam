@@ -1,19 +1,8 @@
 <script setup>
-import {
-  BookOpenIcon,
-  Squares2X2Icon,
-  PencilSquareIcon,
-  FolderOpenIcon,
-  Cog6ToothIcon,
-} from "@heroicons/vue/24/outline";
+import { BookOpenIcon, Squares2X2Icon } from "@heroicons/vue/24/outline";
 import ThemeToggle from "@components/common/ThemeToggle.vue";
 
-const tabs = [
-  { label: "Dashboard", icon: Squares2X2Icon, to: "/" },
-  { label: "Editor", icon: PencilSquareIcon, to: "/studio" },
-  { label: "Files", icon: FolderOpenIcon, to: "/files" },
-  { label: "Settings", icon: Cog6ToothIcon, to: "/settings" },
-];
+const tabs = [{ label: "My library", icon: Squares2X2Icon, to: "/" }];
 </script>
 
 <template>
