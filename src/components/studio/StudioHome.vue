@@ -1,59 +1,43 @@
 <script setup>
 import { ref, computed } from "vue";
 import EditorToolbar from "@components/studio/EditorToolbar.vue";
-import EditorCanvas from "@components/studio/EditorCanvas.vue";
+import TiptapEditor from "@components/editor/TiptapEditor.vue";
 import ArabicKeyboard from "@components/studio/ArabicKeyboard.vue";
 
 // --- Vars (ref, reactive)
-const editorText = ref("");
-const selectedFont = ref("Noto Serif (Arabic)");
-const keyboardVisible = ref(true);
+const tiptapEditor = ref(null);
+const selectedFont = ref("Noto Naskh Arabic");
 
 // --- Computed
 const wordCount = computed(() => {
-  if (!editorText.value) return 0;
-  const words = editorText.value.trim().split(/\s+/);
-  return words.filter((word) => word.length > 0).length;
+  const text = tiptapEditor.value?.editor?.getText() ?? "";
+  if (!text.trim()) return 0;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((w) => w.length > 0).length;
 });
 
 // --- Handlers
-function handleFormat(type) {
-  console.log("Format:", type);
-  // TODO: Implement formatting logic when using rich text editor
-}
-
-function handleAlign(alignment) {
-  console.log("Align:", alignment);
-  // TODO: Implement alignment logic when using rich text editor
-}
-
-function handleList() {
-  console.log("List formatting");
-  // TODO: Implement list formatting when using rich text editor
-}
-
 function handleFontChange(font) {
   selectedFont.value = font;
 }
 
-function handleKeyPress(char) {
-  if (char === "BACKSPACE") {
-    editorText.value = editorText.value.slice(0, -1);
-  } else if (
-    char === "ARROW_LEFT" ||
-    char === "ARROW_RIGHT" ||
-    char === "ARROW_UP" ||
-    char === "ARROW_DOWN"
-  ) {
-    // Arrow keys - would need cursor position tracking for full implementation
-    console.log("Arrow key:", char);
-  } else if (char) {
-    editorText.value += char;
+function handleKeyPress(key) {
+  if (!tiptapEditor.value) return;
+  if (key.type === "special") {
+    if (key.code === "Backspace") {
+      tiptapEditor.value.deleteChar();
+    } else if (key.code === "Enter") {
+      tiptapEditor.value.editor?.chain().focus().splitBlock().run();
+    } else if (key.code === "Space") {
+      tiptapEditor.value.insertText(" ");
+    }
+    return;
   }
-}
-
-function handleToggleKeyboard() {
-  keyboardVisible.value = !keyboardVisible.value;
+  if (key.englishKey) {
+    // TODO: insert arabic char when arabicKey is wired
+  }
 }
 </script>
 
@@ -68,22 +52,15 @@ function handleToggleKeyboard() {
         <EditorToolbar
           :selectedFont="selectedFont"
           :wordCount="wordCount"
-          @align="handleAlign"
           @fontChange="handleFontChange"
-          @format="handleFormat"
-          @list="handleList"
         />
 
-        <!-- Editor Canvas -->
-        <EditorCanvas v-model="editorText" />
+        <!-- Tiptap Editor -->
+        <TiptapEditor ref="tiptapEditor" :font="selectedFont" />
       </div>
     </div>
 
     <!-- On-Screen Keyboard -->
-    <ArabicKeyboard
-      :visible="keyboardVisible"
-      @keyPress="handleKeyPress"
-      @toggle="handleToggleKeyboard"
-    />
+    <ArabicKeyboard @keyPress="handleKeyPress" />
   </main>
 </template>

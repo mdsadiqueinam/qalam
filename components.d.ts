@@ -24,5 +24,6 @@ declare module 'vue' {
     StudioHome: typeof import('./src/components/studio/StudioHome.vue')['default']
     StudioIndex: typeof import('./src/components/studio/StudioIndex.vue')['default']
     ThemeToggle: typeof import('./src/components/common/ThemeToggle.vue')['default']
+    TiptapEditor: typeof import('./src/components/editor/TiptapEditor.vue')['default']
   }
 }
