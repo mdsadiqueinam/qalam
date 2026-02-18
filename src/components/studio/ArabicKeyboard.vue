@@ -1,4 +1,5 @@
 <script setup>
+import { ref, onMounted } from "vue";
 import {
   ChevronDownIcon,
   ArrowLeftIcon,
@@ -7,6 +8,7 @@ import {
   ArrowDownIcon,
 } from "@heroicons/vue/24/outline";
 import KeyButton from "@components/studio/KeyButton.vue";
+import { KEYBOARD_ROWS, FALLBACK_QWERTY_KEYS } from "@root/constants/keyboard";
 
 // --- Props & models
 defineProps({
@@ -18,6 +20,11 @@ defineProps({
 
 const emit = defineEmits(["keyPress", "toggle"]);
 
+// --- Vars (ref, reactive)
+const keyboardLayout = ref([]);
+const layoutSupported = ref(true);
+const layoutName = ref("QWERTY"); // Detected layout name
+
 // --- Handlers
 function handleKeyPress(char) {
   emit("keyPress", char);
@@ -27,48 +34,102 @@ function handleToggle() {
   emit("toggle");
 }
 
-// Keyboard mapping
-const row1 = [
-  { arabic: "ض", english: "Q" },
-  { arabic: "ص", english: "W" },
-  { arabic: "ث", english: "E" },
-  { arabic: "ق", english: "R" },
-  { arabic: "ف", english: "T" },
-  { arabic: "غ", english: "Y" },
-  { arabic: "ع", english: "U" },
-  { arabic: "ه", english: "I" },
-  { arabic: "خ", english: "O" },
-  { arabic: "ح", english: "P" },
-  { arabic: "ج", english: "[" },
-  { arabic: "د", english: "]" },
-];
+async function detectKeyboardLayout() {
+  // Check if Keyboard API is supported
+  if (!("keyboard" in navigator) || !navigator.keyboard.getLayoutMap) {
+    console.warn("Keyboard API not supported, using fallback");
+    layoutSupported.value = false;
+    useFallbackLayout();
+    return;
+  }
 
-const row2 = [
-  { arabic: "ش", english: "A" },
-  { arabic: "س", english: "S", active: true },
-  { arabic: "ي", english: "D" },
-  { arabic: "ب", english: "F" },
-  { arabic: "ل", english: "G" },
-  { arabic: "ا", english: "H" },
-  { arabic: "ت", english: "J" },
-  { arabic: "ن", english: "K" },
-  { arabic: "م", english: "L" },
-  { arabic: "ك", english: ";" },
-  { arabic: "ط", english: "'" },
-];
+  try {
+    const layoutMap = await navigator.keyboard.getLayoutMap();
 
-const row3 = [
-  { arabic: "ئ", english: "Z" },
-  { arabic: "ء", english: "X" },
-  { arabic: "ؤ", english: "C" },
-  { arabic: "ر", english: "V" },
-  { arabic: "لا", english: "B" },
-  { arabic: "ى", english: "N" },
-  { arabic: "ة", english: "M" },
-  { arabic: "و", english: "," },
-  { arabic: "ز", english: "." },
-  { arabic: "ظ", english: "/" },
-];
+    // Build keyboard layout from the detected layout
+    keyboardLayout.value = KEYBOARD_ROWS.map((row) => {
+      return row.map((code) => {
+        const key =
+          layoutMap.get(code) || code.replace(/^Key/, "").replace(/^Digit/, "");
+        return {
+          code,
+          key: key.toUpperCase(),
+          display: key.toUpperCase(),
+        };
+      });
+    });
+
+    // Detect layout type by checking key positions
+    detectLayoutType(layoutMap);
+  } catch (error) {
+    console.error("Error detecting keyboard layout:", error);
+    layoutSupported.value = false;
+    useFallbackLayout();
+  }
+}
+
+function detectLayoutType(layoutMap) {
+  // Check specific keys to determine layout type
+  const keyQ = layoutMap.get("KeyQ");
+  const keyW = layoutMap.get("KeyW");
+  const keyE = layoutMap.get("KeyE");
+  const keyA = layoutMap.get("KeyA");
+  const keyS = layoutMap.get("KeyS");
+  const keyD = layoutMap.get("KeyD");
+  const keyF = layoutMap.get("KeyF");
+  const keyY = layoutMap.get("KeyY");
+  const keyZ = layoutMap.get("KeyZ");
+
+  // AZERTY (French)
+  if (keyA === "q" && keyQ === "a" && keyZ === "w") {
+    layoutName.value = "AZERTY";
+  }
+  // QWERTZ (German)
+  else if (keyZ === "y" && keyY === "z") {
+    layoutName.value = "QWERTZ";
+  }
+  // DVORAK
+  else if (keyQ === "'" && keyW === "," && keyE === ".") {
+    layoutName.value = "DVORAK";
+  }
+  // Colemak
+  else if (keyS === "r" && keyD === "s" && keyF === "t") {
+    layoutName.value = "COLEMAK";
+  }
+  // QWERTY (default)
+  else if (keyQ === "q" && keyW === "w") {
+    layoutName.value = "QWERTY";
+  }
+  // Unknown
+  else {
+    layoutName.value = "UNKNOWN";
+  }
+
+  // Try to get locale for more specific info
+  const locale = navigator.language || navigator.userLanguage;
+  if (locale) {
+    const region = locale.split("-")[1]?.toUpperCase();
+    if (region && layoutName.value === "QWERTY") {
+      layoutName.value = `QWERTY (${region})`;
+    }
+  }
+}
+
+function useFallbackLayout() {
+  // Fallback to standard QWERTY layout
+  keyboardLayout.value = FALLBACK_QWERTY_KEYS.map((row, rowIndex) => {
+    return row.map((key, keyIndex) => ({
+      code: KEYBOARD_ROWS[rowIndex][keyIndex],
+      key,
+      display: key,
+    }));
+  });
+}
+
+// --- Lifecycle
+onMounted(() => {
+  detectKeyboardLayout();
+});
 </script>
 
 <template>
@@ -83,12 +144,12 @@ const row3 = [
           <span
             class="text-xs font-bold text-main-text-muted uppercase tracking-wider"
           >
-            Arabic Transliteration Keyboard
+            Your {{ layoutName }} Keyboard
           </span>
           <span
             class="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary"
           >
-            ENABLED
+            {{ layoutSupported ? "DETECTED" : "FALLBACK" }}
           </span>
         </div>
         <div class="flex gap-2">
@@ -104,56 +165,50 @@ const row3 = [
 
       <!-- Keyboard Layout -->
       <div class="grid gap-1.5 select-none">
-        <!-- Row 1 -->
-        <div class="flex justify-center gap-1.5">
+        <!-- Dynamic Rows: Numbers, QWERTY, ASDF, ZXCV -->
+        <div
+          v-for="(row, rowIndex) in keyboardLayout"
+          :key="rowIndex"
+          class="flex justify-center gap-1.5"
+          :class="{
+            'ml-0': rowIndex === 0,
+            'ml-6': rowIndex === 1,
+            'ml-8': rowIndex === 2,
+            'ml-12': rowIndex === 3,
+          }"
+        >
+          <!-- SHIFT key for row 4 (bottom row) -->
           <KeyButton
-            v-for="key in row1"
-            :key="key.english"
-            :arabicChar="key.arabic"
-            :englishKey="key.english"
-            :variant="key.active ? 'active' : 'normal'"
-            @keyPress="handleKeyPress(key.arabic)"
-          />
-        </div>
-
-        <!-- Row 2 -->
-        <div class="flex justify-center gap-1.5 ml-4">
-          <KeyButton
-            v-for="key in row2"
-            :key="key.english"
-            :arabicChar="key.arabic"
-            :englishKey="key.english"
-            :variant="key.active ? 'active' : 'normal'"
-            @keyPress="handleKeyPress(key.arabic)"
-          />
-          <KeyButton
-            label="ENTER"
-            variant="special"
-            width="w-20"
-            @keyPress="handleKeyPress('\n')"
-          />
-        </div>
-
-        <!-- Row 3 -->
-        <div class="flex justify-center gap-1.5">
-          <KeyButton
+            v-if="rowIndex === 3"
             label="SHIFT"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
           />
+
+          <!-- Regular keys from detected layout -->
           <KeyButton
-            v-for="key in row3"
-            :key="key.english"
-            :arabicChar="key.arabic"
-            :englishKey="key.english"
-            @keyPress="handleKeyPress(key.arabic)"
+            v-for="key in row"
+            :key="key.code"
+            :label="key.display"
+            variant="normal"
+            @keyPress="handleKeyPress(key.key)"
+          />
+
+          <!-- Row-specific special keys -->
+          <KeyButton
+            v-if="rowIndex === 0"
+            label="BKSPC"
+            variant="special"
+            width="w-20"
+            @keyPress="handleKeyPress('BACKSPACE')"
           />
           <KeyButton
-            label="BACKSPACE"
+            v-if="rowIndex === 2"
+            label="ENTER"
             variant="special"
-            width="w-28"
-            @keyPress="handleKeyPress('BACKSPACE')"
+            width="w-24"
+            @keyPress="handleKeyPress('\n')"
           />
         </div>
 
