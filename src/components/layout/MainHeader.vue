@@ -1,21 +1,52 @@
 <script setup>
-import { BookOpenIcon } from "@heroicons/vue/24/outline";
+import {
+  BookOpenIcon,
+  Squares2X2Icon,
+  PencilSquareIcon,
+  FolderOpenIcon,
+  Cog6ToothIcon,
+} from "@heroicons/vue/24/outline";
 import ThemeToggle from "@components/common/ThemeToggle.vue";
+
+const tabs = [
+  { label: "Dashboard", icon: Squares2X2Icon, to: "/" },
+  { label: "Editor", icon: PencilSquareIcon, to: "/studio" },
+  { label: "Files", icon: FolderOpenIcon, to: "/files" },
+  { label: "Settings", icon: Cog6ToothIcon, to: "/settings" },
+];
 </script>
 
 <template>
   <header
-    class="flex h-16 items-center justify-between border-b border-divider bg-sidebar px-6 py-3 shrink-0"
+    class="flex h-14 items-center justify-between border-b border-divider bg-sidebar px-6 shrink-0"
   >
-    <div class="flex items-center gap-3">
-      <div class="bg-primary p-1.5 rounded-lg text-primary-text">
-        <BookOpenIcon class="w-6 h-6" />
+    <div class="flex flex-nowrap items-center">
+      <div class="flex items-center gap-3">
+        <div class="bg-primary p-1.5 rounded-lg text-primary-text">
+          <BookOpenIcon class="w-5 h-5" />
+        </div>
+        <h1
+          class="font-display text-lg font-bold text-sidebar-text-selected tracking-tight"
+        >
+          Qalam
+        </h1>
       </div>
-      <h1
-        class="font-display text-xl font-bold text-sidebar-text-selected tracking-tight"
-      >
-        Qalam
-      </h1>
+
+      <!-- Vertical separator -->
+      <div class="h-8 w-px bg-divider ms-4 me-1"></div>
+
+      <nav class="flex items-center gap-1">
+        <RouterLink
+          v-for="tab in tabs"
+          :key="tab.to"
+          :to="tab.to"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-sidebar-text hover:text-primary hover:bg-primary/10 transition-colors"
+          activeClass="!text-primary bg-primary/10"
+        >
+          <component :is="tab.icon" class="w-4 h-4" />
+          {{ tab.label }}
+        </RouterLink>
+      </nav>
     </div>
 
     <div class="flex items-center gap-4">
