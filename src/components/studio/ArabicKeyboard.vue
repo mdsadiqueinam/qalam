@@ -147,7 +147,7 @@ onMounted(() => {
             v-if="hasRightShift(rowIndex)"
             :englishKey="{ normal: 'SHIFT', shift: 'SHIFT' }"
             :shift="shiftState"
-            variant="special"
+            :variant="shiftState ? 'active' : 'special'"
             width="w-20"
             @keyPress="handleKeyPress('')"
           />
