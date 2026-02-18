@@ -264,4 +264,13 @@ async function logTransaction(db, tableName, tableDef, action, obj) {
 // Singleton export
 // ---------------------------------------------------------------------------
 
+/**
+ * @type {Dexie & {
+ *   books: Dexie.Table<any, string>,
+ *   transactionQueue: Dexie.Table<any, string>,
+ *   meta: Dexie.Table<any, string>,
+ *   Book: any,
+ *   TransactionQueueItem: any
+ * }}
+ */
 export const db = initDb();
