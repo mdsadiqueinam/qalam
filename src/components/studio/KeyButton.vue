@@ -1,17 +1,13 @@
 <script setup>
 // --- Props & models
 defineProps({
-  arabicChar: {
-    type: String,
-    default: "",
-  },
   englishKey: {
-    type: String,
-    default: "",
+    type: Object, // { normal: 'a', shift: 'A' }
+    default: () => ({}),
   },
-  label: {
-    type: String,
-    default: "",
+  shift: {
+    type: Boolean,
+    default: false,
   },
   variant: {
     type: String,
@@ -23,11 +19,11 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["key-press"]);
+const emit = defineEmits(["keyPress"]);
 
 // --- Handlers
 function handleClick() {
-  emit("key-press");
+  emit("keyPress");
 }
 </script>
 
@@ -44,36 +40,41 @@ function handleClick() {
     ]"
     @click="handleClick"
   >
-    <!-- Arabic character (for normal keys) -->
+    <!-- Main key display - shows normal or shift variant based on shift prop -->
     <span
-      v-if="arabicChar && variant === 'normal'"
-      class="font-serif text-lg font-bold"
+      v-if="englishKey?.normal"
+      class="font-bold text-base"
       :class="variant === 'active' ? 'text-primary' : 'text-main-text'"
     >
-      {{ arabicChar }}
+      {{ shift ? englishKey.shift : englishKey.normal }}
     </span>
 
-    <!-- Label (for special keys) -->
-    <span
-      v-if="label"
-      class="font-bold"
-      :class="label.length > 4 ? 'text-[10px]' : 'text-xs'"
-    >
-      {{ label }}
-    </span>
+    <!-- English key hints (small indicators in corners) -->
+    <template v-if="englishKey?.normal && variant === 'normal'">
+      <!-- Shift variant (top-left corner) -->
+      <span
+        class="absolute top-1 left-1.5 text-[10px] font-semibold transition-colors"
+        :class="
+          variant === 'active'
+            ? 'text-primary/70'
+            : 'text-main-text-muted group-hover:text-primary/70'
+        "
+      >
+        {{ englishKey.shift }}
+      </span>
 
-    <!-- English key hint (top-left corner) -->
-    <span
-      v-if="englishKey && variant === 'normal'"
-      class="absolute top-1 left-1.5 text-[10px] transition-colors"
-      :class="
-        variant === 'active'
-          ? 'text-primary/70'
-          : 'text-main-text-muted group-hover:text-primary/70'
-      "
-    >
-      {{ englishKey }}
-    </span>
+      <!-- Normal variant (bottom-left corner) -->
+      <span
+        class="absolute bottom-1 left-1.5 text-[10px] transition-colors"
+        :class="
+          variant === 'active'
+            ? 'text-primary/70'
+            : 'text-main-text-muted group-hover:text-primary/70'
+        "
+      >
+        {{ englishKey.normal }}
+      </span>
+    </template>
   </div>
 </template>
 

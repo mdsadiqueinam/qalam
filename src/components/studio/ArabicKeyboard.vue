@@ -20,6 +20,7 @@ const emit = defineEmits(["keyPress"]);
 
 // --- Vars (ref, reactive)
 const keyboardLayout = ref([]);
+const keyMap = ref({}); // Key map with { normal, shift } for each key
 const layoutSupported = ref(true);
 const layoutName = ref("QWERTY"); // Detected layout name
 
@@ -32,6 +33,7 @@ async function detectKeyboardLayout() {
   const result = await detectLayout();
 
   layoutSupported.value = result.supported;
+  keyMap.value = result.keyMap || {};
 
   if (result.supported && result.layout) {
     keyboardLayout.value = result.layout;
@@ -103,7 +105,7 @@ onMounted(() => {
           <!-- Left SHIFT key for row 3 (ZXCV row) -->
           <KeyButton
             v-if="hasLeftShift(rowIndex)"
-            label="SHIFT"
+            :englishKey="{ normal: 'shift', shift: 'SHIFT' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
@@ -113,7 +115,7 @@ onMounted(() => {
           <KeyButton
             v-for="key in row"
             :key="key.code"
-            :label="key.display"
+            :englishKey="keyMap[key.code]"
             variant="normal"
             @keyPress="handleKeyPress(key.key)"
           />
@@ -121,21 +123,21 @@ onMounted(() => {
           <!-- Row-specific special keys -->
           <KeyButton
             v-if="hasBackspace(rowIndex)"
-            label="BKSPC"
+            :englishKey="{ normal: 'backspace', shift: 'BACKSPACE' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('BACKSPACE')"
           />
           <KeyButton
             v-if="hasEnter(rowIndex)"
-            label="ENTER"
+            :englishKey="{ normal: 'enter', shift: 'ENTER' }"
             variant="special"
             width="w-24"
             @keyPress="handleKeyPress('\n')"
           />
           <KeyButton
             v-if="hasRightShift(rowIndex)"
-            label="SHIFT"
+            :englishKey="{ normal: 'shift', shift: 'SHIFT' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
@@ -145,25 +147,25 @@ onMounted(() => {
         <!-- Row 4 -->
         <div class="flex justify-center gap-1.5">
           <KeyButton
-            label="CTRL"
+            :englishKey="{ normal: 'ctrl', shift: 'CTRL' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
           />
           <KeyButton
-            label="ALT"
+            :englishKey="{ normal: 'alt', shift: 'ALT' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
           />
           <KeyButton
-            label="SPACE"
+            :englishKey="{ normal: 'space', shift: 'SPACE' }"
             variant="special"
             width="w-96"
             @keyPress="handleKeyPress(' ')"
           />
           <KeyButton
-            label="ALT GR"
+            :englishKey="{ normal: 'alt gr', shift: 'ALT GR' }"
             variant="special"
             width="w-20"
             @keyPress="handleKeyPress('')"
