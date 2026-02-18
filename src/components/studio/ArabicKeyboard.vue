@@ -13,6 +13,7 @@ import {
   detectLayoutType as getLayoutType,
   addRegionalInfo,
 } from "@utils/keyboard";
+import { ARABIC_LAYOUTS } from "@root/constants/keyboard";
 import { useEventListener } from "@vueuse/core";
 
 // --- Props & models
@@ -22,12 +23,18 @@ const keyboardLayout = ref([]); // Array<Array<{ code, type, englishKey?, arabic
 const layoutSupported = ref(true);
 const layoutName = ref("QWERTY");
 const pressedKeys = ref(new Set());
+const selectedLayoutId = ref("standard");
 const shiftState = computed(
   () =>
     pressedKeys.value.has("ShiftLeft") || pressedKeys.value.has("ShiftRight"),
 );
 const altState = computed(
   () => pressedKeys.value.has("AltLeft") || pressedKeys.value.has("AltRight"),
+);
+const selectedLayout = computed(
+  () =>
+    ARABIC_LAYOUTS.find((l) => l.id === selectedLayoutId.value) ??
+    ARABIC_LAYOUTS[0],
 );
 
 // --- Handlers
@@ -75,10 +82,9 @@ function getEnglishKey(key) {
 }
 
 function getArabicKey(key) {
-  if (key.type === "char" && key.arabicKey) {
-    return key.arabicKey;
-  }
-  return {};
+  if (key.type !== "char") return {};
+  const entry = selectedLayout.value.map[key.code];
+  return entry ?? {};
 }
 
 function getVariant(key) {
@@ -115,6 +121,22 @@ detectKeyboardLayout();
           >
             {{ layoutSupported ? "DETECTED" : "FALLBACK" }}
           </span>
+        </div>
+        <!-- Layout selector pills -->
+        <div class="flex items-center gap-1.5">
+          <button
+            v-for="layout in ARABIC_LAYOUTS"
+            :key="layout.id"
+            class="rounded-full px-3 py-0.5 text-[11px] font-semibold transition-colors"
+            :class="
+              selectedLayoutId === layout.id
+                ? 'bg-primary text-white'
+                : 'bg-primary/10 text-primary hover:bg-primary/20'
+            "
+            @click="selectedLayoutId = layout.id"
+          >
+            {{ layout.label }}
+          </button>
         </div>
         <div class="flex gap-2">
           <button

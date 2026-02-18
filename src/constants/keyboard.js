@@ -169,6 +169,76 @@ export const ARABIC_KEY_MAP = {
 };
 
 /**
+ * Arabic 123 key mapping — macOS "Arabic 123" layout.
+ * Differences from ARABIC_KEY_MAP:
+ *   - Number row: Backquote → ة/ا (not ذ/~)
+ *   - ZXCV row:   KeyZ → ذ/ّ, KeyX → د/ْ, KeyC → أ/{, KeyV → ز/}
+ *   - All other keys identical to ARABIC_KEY_MAP.
+ */
+export const ARABIC_123_KEY_MAP = {
+  // Row 0: Number row
+  Backquote: { default: "ة", shift: "ا" },
+  Digit1: { default: "١", shift: "!" },
+  Digit2: { default: "٢", shift: "@" },
+  Digit3: { default: "٣", shift: "#" },
+  Digit4: { default: "٤", shift: "$" },
+  Digit5: { default: "٥", shift: "٪" },
+  Digit6: { default: "٦", shift: "^" },
+  Digit7: { default: "٧", shift: "&" },
+  Digit8: { default: "٨", shift: "*" },
+  Digit9: { default: "٩", shift: ")" },
+  Digit0: { default: "٠", shift: "(" },
+
+  // Row 1: QWERTY row (same as standard)
+  KeyQ: { default: "ض", shift: "َ" },
+  KeyW: { default: "ص", shift: "ً" },
+  KeyE: { default: "ث", shift: "ُ" },
+  KeyR: { default: "ف", shift: "إ", alt: "ڤ" },
+  KeyT: { default: "ق", shift: "لإ" },
+  KeyY: { default: "غ", shift: "إ" },
+  KeyU: { default: "ع", shift: "'" },
+  KeyI: { default: "ه", shift: "÷" },
+  KeyO: { default: "خ", shift: "x" },
+  KeyP: { default: "ح", shift: "؛" },
+  BracketLeft: { default: "ج", shift: "<" },
+  BracketRight: { default: "د", shift: ">" },
+
+  // Row 2: ASDF row (same as standard)
+  KeyA: { default: "ش", shift: "ِ" },
+  KeyS: { default: "س", shift: "ٍ" },
+  KeyD: { default: "ي", shift: "ٰ" },
+  KeyF: { default: "ب", shift: "ٖ", alt: "پ" },
+  KeyG: { default: "ل", shift: "أ" },
+  KeyH: { default: "ا", shift: "آ" },
+  KeyJ: { default: "ت", shift: "ـ" },
+  KeyK: { default: "ن", shift: "،" },
+  KeyL: { default: "م", shift: "/" },
+  Semicolon: { default: "ك", shift: ":" },
+  Quote: { default: "ط", shift: '"' },
+
+  // Row 3: ZXCV row — differs from standard
+  KeyZ: { default: "ذ", shift: "ّ" },
+  KeyX: { default: "د", shift: "ْ" },
+  KeyC: { default: "أ", shift: "{" },
+  KeyV: { default: "ز", shift: "}" },
+  KeyB: { default: "لآ", shift: "لأ" },
+  KeyN: { default: "ى", shift: "آ" },
+  KeyM: { default: "ة", shift: "'" },
+  Comma: { default: "و", shift: "," },
+  Period: { default: "ر", shift: "." },
+  Slash: { default: "ظ", shift: "؟" },
+};
+
+/**
+ * Available Arabic keyboard layouts.
+ * Used by ArabicKeyboard.vue to render the layout selector.
+ */
+export const ARABIC_LAYOUTS = [
+  { id: "standard", label: "Arabic", map: ARABIC_KEY_MAP },
+  { id: "arabic123", label: "Arabic 123", map: ARABIC_123_KEY_MAP },
+];
+
+/**
  * English shift-key map for digit/symbol keys.
  * Used by utils/keyboard.js to resolve englishKey.shift for non-letter keys.
  */
