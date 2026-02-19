@@ -51,7 +51,7 @@ declare module 'vue' {
     ConfirmDialog: typeof import('./resources/js/shared/components/dialogs/ConfirmDialog.vue')['default']
     copy: typeof import('./resources/js/shared/components/BaseButton copy.vue')['default']
     EditorCanvas: typeof import('./src/components/studio/EditorCanvas.vue')['default']
-    EditorToolbar: typeof import('./src/components/studio/EditorToolbar.vue')['default']
+    EditorToolbar: typeof import('./src/components/editor/EditorToolbar.vue')['default']
     EmojiPicker: typeof import('./resources/js/shared/components/EmojiPicker.vue')['default']
     FloatingWrapper: typeof import('./resources/js/shared/components/FloatingWrapper.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']

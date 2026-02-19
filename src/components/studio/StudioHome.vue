@@ -1,27 +1,13 @@
 <script setup>
-import { ref, computed } from "vue";
-import EditorToolbar from "@components/studio/EditorToolbar.vue";
+import { ref } from "vue";
 import TiptapEditor from "@components/editor/TiptapEditor.vue";
 import ArabicKeyboard from "@components/studio/ArabicKeyboard.vue";
 
 // --- Vars (ref, reactive)
 const tiptapEditor = ref(null);
-const selectedFont = ref("Noto Naskh Arabic");
 
 // --- Computed
-const wordCount = computed(() => {
-  const text = tiptapEditor.value?.editor?.getText() ?? "";
-  if (!text.trim()) return 0;
-  return text
-    .trim()
-    .split(/\s+/)
-    .filter((w) => w.length > 0).length;
-});
-
-// --- Handlers
-function handleFontChange(font) {
-  selectedFont.value = font;
-}
+// Word count is now handled inside TiptapEditor
 
 function handleKeyPress(key) {
   if (!tiptapEditor.value) return;
@@ -48,15 +34,8 @@ function handleKeyPress(key) {
       <div
         class="mx-auto flex w-full max-w-4xl flex-1 flex-col rounded-xl border border-border-default bg-sidebar shadow-sm overflow-hidden"
       >
-        <!-- Toolbar -->
-        <EditorToolbar
-          :selectedFont="selectedFont"
-          :wordCount="wordCount"
-          @fontChange="handleFontChange"
-        />
-
         <!-- Tiptap Editor -->
-        <TiptapEditor ref="tiptapEditor" :font="selectedFont" />
+        <TiptapEditor ref="tiptapEditor" />
       </div>
     </div>
 

@@ -15,16 +15,11 @@ import {
   Bars3BottomRightIcon,
   ListBulletIcon,
 } from "@heroicons/vue/24/outline";
+import EditorToolbar from "./EditorToolbar.vue";
 
 // --- Props & models
-defineProps({
-  font: {
-    type: String,
-    default: "Noto Naskh Arabic",
-  },
-});
-
 const modelValue = defineModel({ type: String, default: "" });
+const font = ref("Noto Naskh Arabic");
 
 // --- Use
 const editor = useEditor({
@@ -52,6 +47,16 @@ const editor = useEditor({
   },
 });
 
+// --- Computed
+const wordCount = computed(() => {
+  const text = editor.value?.getText() ?? "";
+  if (!text.trim()) return 0;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((w) => w.length > 0).length;
+});
+
 // --- Handlers
 function insertText(text) {
   if (!editor.value) return;
@@ -70,12 +75,46 @@ function deleteChar() {
     .run();
 }
 
+// Toolbar Handlers
+function handleFormat(type) {
+  if (!editor.value) return;
+  if (type === "bold") editor.value.chain().focus().toggleBold().run();
+  if (type === "italic") editor.value.chain().focus().toggleItalic().run();
+  if (type === "underline")
+    editor.value.chain().focus().toggleUnderline().run();
+}
+
+function handleAlign(alignment) {
+  if (!editor.value) return;
+  editor.value.chain().focus().setTextAlign(alignment).run();
+}
+
+function handleList() {
+  if (!editor.value) return;
+  editor.value.chain().focus().toggleBulletList().run();
+}
+
+function handleFontChange(newFont) {
+  font.value = newFont;
+}
+
 // --- Exposed
 defineExpose({ editor, insertText, deleteChar });
 </script>
 
 <template>
   <div class="relative flex flex-1 flex-col overflow-hidden">
+    <!-- Toolbar -->
+    <EditorToolbar
+      v-if="editor"
+      :selectedFont="font"
+      :wordCount="wordCount"
+      @format="handleFormat"
+      @align="handleAlign"
+      @list="handleList"
+      @fontChange="handleFontChange"
+    />
+
     <!-- Bubble Menu Toolbar (appears on text selection) -->
     <BubbleMenu
       v-if="editor"

@@ -18,7 +18,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["format", "align", "list", "font-change"]);
+const emit = defineEmits(["format", "align", "list", "fontChange"]);
 
 // --- Handlers
 function handleFormat(type) {
@@ -34,7 +34,7 @@ function handleList() {
 }
 
 function handleFontChange(event) {
-  emit("font-change", event.target.value);
+  emit("fontChange", event.target.value);
 }
 </script>
 
