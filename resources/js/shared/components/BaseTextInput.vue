@@ -1,19 +1,19 @@
 <script setup>
-import { micromark } from 'micromark'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
+import { micromark } from "micromark";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
 
 // --- Use ---
-const slots = useSlots()
+const slots = useSlots();
 
 // --- Props & models ---
 const props = defineProps({
   modelValue: {
     type: [String, Number],
-    default: '',
+    default: "",
   },
   label: {
     type: String,
-    default: '',
+    default: "",
   },
   labelLeft: {
     type: Boolean,
@@ -25,35 +25,35 @@ const props = defineProps({
   },
   instructions: {
     type: String,
-    default: '',
+    default: "",
   },
   name: {
     type: String,
-    default: '',
+    default: "",
   },
   errorMsg: {
-    errorMsg: String,
-    default: '',
+    type: String,
+    default: "",
   },
   placeholder: {
     type: String,
-    default: '',
+    default: "",
   },
   type: {
     type: String,
     validator(value) {
       return [
-        'text',
-        'password',
-        'email',
-        'datetime-local',
-        'date',
-        'number',
-        'url',
-        'checkbox',
-      ].includes(value)
+        "text",
+        "password",
+        "email",
+        "datetime-local",
+        "date",
+        "number",
+        "url",
+        "checkbox",
+      ].includes(value);
     },
-    default: 'text',
+    default: "text",
   },
   disabled: {
     type: Boolean,
@@ -81,18 +81,18 @@ const props = defineProps({
   },
   inputClass: {
     type: String,
-    default: '',
+    default: "",
   },
   labelWrapperClass: {
     type: String,
-    default: '',
+    default: "",
   },
   size: {
     type: String,
     validator(value) {
-      return ['sm', 'md'].includes(value)
+      return ["sm", "md"].includes(value);
     },
-    default: 'md',
+    default: "md",
   },
   autofocus: {
     type: Boolean,
@@ -102,64 +102,64 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 
 // --- Emits ---
-const emit = defineEmits(['update:modelValue', 'blur', 'focus'])
+const emit = defineEmits(["update:modelValue", "blur", "focus"]);
 
 // --- Vars ---
-const inputEl = ref(null)
+const inputEl = ref(null);
 defineExpose({
   inputEl,
   focus,
-})
+});
 
 // --- Handlers ---
 function focus() {
-  inputEl.value?.focus()
+  inputEl.value?.focus();
 }
 
 const showClearBtn = computed(() => {
-  return props.clearBtn && Boolean(props.modelValue)
-})
+  return props.clearBtn && Boolean(props.modelValue);
+});
 
 function clear() {
-  emit('update:modelValue', '')
+  emit("update:modelValue", "");
 }
 
 // --- Watchers & computed ---
-const inline = computed(() => props.labelLeft || props.labelRight)
+const inline = computed(() => props.labelLeft || props.labelRight);
 
 const cssClass = computed(() => {
   let c =
-    'w-full rounded-xl border border-divider bg-main/50 text-sm text-main-text placeholder-main-text-muted  ring-1 ring-black/5 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-main/80 dark:bg-main-unselected/50 dark:ring-white/10 dark:focus:bg-main-unselected disabled:cursor-not-allowed disabled:text-grey-5'
-  if (props.size === 'sm') c += ' py-1.5 text-12'
-  else c += ' py-2.5'
+    "w-full rounded-xl border border-divider bg-main/50 text-sm text-main-text placeholder-main-text-muted  ring-1 ring-black/5 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-main/80 dark:bg-main-unselected/50 dark:ring-white/10 dark:focus:bg-main-unselected disabled:cursor-not-allowed disabled:text-grey-5";
+  if (props.size === "sm") c += " py-1.5 text-12";
+  else c += " py-2.5";
 
   // Left padding - conditional based on icon slot
   if (slots.icon) {
-    c += props.size === 'sm' ? ' pl-8' : ' pl-10'
+    c += props.size === "sm" ? " pl-8" : " pl-10";
   } else {
-    c += ' pl-3'
+    c += " pl-3";
   }
 
   // Right padding - conditional based on clear button
   if (props.clearBtn) {
-    c += ' pr-10'
+    c += " pr-10";
   } else {
-    c += ' pr-3'
+    c += " pr-3";
   }
 
-  if (props.inputClass) c += ' ' + props.inputClass
-  return c
-})
+  if (props.inputClass) c += " " + props.inputClass;
+  return c;
+});
 
 // --- Lifecycle hooks & related ---
 onMounted(() => {
   if (props.autofocus) {
-    focus()
+    focus();
   }
-})
+});
 </script>
 
 <template>
@@ -192,7 +192,9 @@ onMounted(() => {
           'text-14 mb-4': size === 'md',
           'text-12': size === 'sm',
         }"
-        v-html="micromark(instructions).replace('href=', 'target=\'_blank\' href=')"
+        v-html="
+          micromark(instructions).replace('href=', 'target=\'_blank\' href=')
+        "
       />
     </div>
     <div class="relative w-full">

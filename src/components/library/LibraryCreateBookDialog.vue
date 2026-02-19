@@ -58,7 +58,7 @@ async function handleSubmit() {
   >
     <!-- Body -->
     <div class="flex flex-col gap-4 w-72">
-      <BaseInput
+      <BaseTextInput
         v-model="form.title"
         label="Title"
         name="book-title"
@@ -68,7 +68,7 @@ async function handleSubmit() {
         required
         autofocus
       />
-      <BaseInput
+      <BaseTextInput
         v-model="form.coverImage"
         label="Cover Image URL"
         name="book-cover-image"

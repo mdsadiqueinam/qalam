@@ -32,7 +32,6 @@ declare module 'vue' {
     BaseDrawer: typeof import('./resources/js/shared/components/BaseDrawer.vue')['default']
     BaseExpandable: typeof import('./resources/js/shared/components/BaseExpandable.vue')['default']
     BaseHoverSelect: typeof import('./resources/js/shared/components/BaseHoverSelect.vue')['default']
-    BaseInput: typeof import('./resources/js/shared/components/BaseInput.vue')['default']
     BaseNestedDropMenu: typeof import('./resources/js/shared/components/BaseNestedDropMenu.vue')['default']
     BaseNestedDropMenuPanel: typeof import('./resources/js/shared/components/BaseNestedDropMenuPanel.vue')['default']
     BasePanel: typeof import('./resources/js/shared/components/BasePanel.vue')['default']
