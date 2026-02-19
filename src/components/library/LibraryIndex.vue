@@ -21,7 +21,7 @@ function createBook() {
 }
 
 function openBook(bookId) {
-  router.push(`/library/${bookId}`);
+  router.push(`/book/${bookId}`);
 }
 </script>
 

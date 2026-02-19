@@ -30,9 +30,9 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/library/[id]': RouteRecordInfo<
-      '/library/[id]',
-      '/library/:id',
+    '/book/[id]': RouteRecordInfo<
+      '/book/[id]',
+      '/book/:id',
       { id: ParamValue<true> },
       { id: ParamValue<false> },
       | never
@@ -63,9 +63,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/library/[id].vue': {
+    'src/pages/book/[id].vue': {
       routes:
-        | '/library/[id]'
+        | '/book/[id]'
       views:
         | never
     }
