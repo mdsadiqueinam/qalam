@@ -38,6 +38,15 @@ const selectedLayout = computed(
     ARABIC_LAYOUTS[0],
 );
 
+const IGNORED_KEYS = [
+  "ControlLeft",
+  "ControlRight",
+  "AltLeft",
+  "AltRight",
+  "MetaLeft",
+  "MetaRight",
+];
+
 // --- Handlers
 /**
  *
@@ -45,15 +54,7 @@ const selectedLayout = computed(
  * @param mapping {{  }}
  */
 function handleKeyPress(event, mapping) {
-  const ignoredKeys = [
-    "ControlLeft",
-    "ControlRight",
-    "AltLeft",
-    "AltRight",
-    "MetaLeft",
-    "MetaRight",
-  ];
-  if (ignoredKeys.some((key) => pressedKeys.value.has(key))) return;
+  if (IGNORED_KEYS.some((key) => pressedKeys.value.has(key))) return;
 
   event.preventDefault();
   event.stopPropagation();
@@ -83,6 +84,10 @@ const rowClasses = computed(() => [
 
 // --- Lifecycle
 function onKeyDown(e) {
+  if (IGNORED_KEYS.some((key) => pressedKeys.value.has(key))) {
+    return;
+  }
+
   pressedKeys.value = new Set([...pressedKeys.value, e.code]);
   const mapping = selectedLayout.value.map[e.code];
   if (mapping) {
@@ -91,7 +96,6 @@ function onKeyDown(e) {
 }
 
 function onKeyUp(e) {
-  console.log(e);
   const next = new Set(pressedKeys.value);
   next.delete(e.code);
   pressedKeys.value = next;
