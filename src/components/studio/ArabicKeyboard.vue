@@ -45,7 +45,14 @@ const selectedLayout = computed(
  * @param mapping {{  }}
  */
 function handleKeyPress(event, mapping) {
-  const ignoredKeys = ["ControlLeft", "ControlRight", "AltLeft", "AltRight"];
+  const ignoredKeys = [
+    "ControlLeft",
+    "ControlRight",
+    "AltLeft",
+    "AltRight",
+    "MetaLeft",
+    "MetaRight",
+  ];
   if (ignoredKeys.some((key) => pressedKeys.value.has(key))) return;
 
   event.preventDefault();
@@ -84,6 +91,7 @@ function onKeyDown(e) {
 }
 
 function onKeyUp(e) {
+  console.log(e);
   const next = new Set(pressedKeys.value);
   next.delete(e.code);
   pressedKeys.value = next;
