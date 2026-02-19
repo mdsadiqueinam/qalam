@@ -13,6 +13,7 @@ import {
   PencilSquareIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  CameraIcon,
 } from "@heroicons/vue/24/outline";
 
 // --- Props & models ---
@@ -92,6 +93,43 @@ watch(content, (newVal) => {
   }, 1000);
 });
 
+// --- Cover Image & Title Updates ---
+const fileInput = ref(null);
+const isEditingTitle = ref(false);
+const titleInput = ref(null);
+const localTitle = ref("");
+
+function triggerCoverUpload() {
+  fileInput.value.click();
+}
+
+function handleCoverImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    db.books.update(props.id, { coverImage: e.target.result });
+  };
+  reader.readAsDataURL(file);
+}
+
+function startEditingTitle() {
+  localTitle.value = book.value.title;
+  isEditingTitle.value = true;
+  // Focus logic needs to wait for DOM update
+  setTimeout(() => {
+    titleInput.value?.focus();
+  }, 0);
+}
+
+function saveTitle() {
+  if (localTitle.value.trim() && localTitle.value !== book.value.title) {
+    db.books.update(props.id, { title: localTitle.value });
+  }
+  isEditingTitle.value = false;
+}
+
 // Formatting dates
 function formatDate(date) {
   if (!date) return "";
@@ -112,8 +150,16 @@ function formatDate(date) {
       <div class="flex flex-col gap-6">
         <!-- Cover Image -->
         <div
-          class="aspect-3/4 w-full rounded-xl overflow-hidden shadow-lg shadow-primary/10 bg-primary/5 border border-primary/10 relative"
+          class="group aspect-3/4 w-full rounded-xl overflow-hidden shadow-lg shadow-primary/10 bg-primary/5 border border-primary/10 relative"
         >
+          <input
+            ref="fileInput"
+            type="file"
+            class="hidden"
+            accept="image/*"
+            @change="handleCoverImageUpload"
+          />
+
           <img
             v-if="book.coverImage"
             :class="'w-full h-full object-cover'"
@@ -125,6 +171,23 @@ function formatDate(date) {
             class="w-full h-full flex items-center justify-center text-primary/30"
           >
             <BookOpenIcon class="w-20 h-20" />
+          </div>
+
+          <!-- Edit Overlay -->
+          <div
+            class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10"
+          >
+            <BaseButton
+              variant="secondary"
+              size="sm"
+              class="bg-white/90 hover:bg-white text-main-text shadow-lg"
+              @click="triggerCoverUpload"
+            >
+              <template #icon>
+                <CameraIcon class="w-4 h-4" />
+              </template>
+              Change Cover
+            </BaseButton>
           </div>
         </div>
 
@@ -240,8 +303,20 @@ function formatDate(date) {
             <BaseBadge variant="info" showStatusDot class="mb-4"
               >Active</BaseBadge
             >
+            <div v-if="isEditingTitle" class="mt-4">
+              <input
+                ref="titleInput"
+                v-model="localTitle"
+                class="w-full text-4xl md:text-5xl font-bold text-center bg-transparent border-b-2 border-primary focus:outline-none text-main-text font-display py-2"
+                @blur="saveTitle"
+                @keydown.enter="saveTitle"
+              />
+            </div>
             <h1
-              class="text-4xl md:text-5xl font-bold mt-4 leading-tight text-main-text font-display"
+              v-else
+              class="text-4xl md:text-5xl font-bold mt-4 leading-tight text-main-text font-display cursor-pointer hover:text-primary/80 transition-colors"
+              title="Click to edit title"
+              @click="startEditingTitle"
             >
               {{ book.title }}
             </h1>

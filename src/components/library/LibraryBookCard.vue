@@ -1,5 +1,5 @@
 <script setup>
-import { EllipsisVerticalIcon } from "@heroicons/vue/24/outline";
+import { EllipsisVerticalIcon, BookOpenIcon } from "@heroicons/vue/24/outline";
 import BaseButton from "@shared/components/BaseButton.vue";
 
 // --- Props & models
@@ -27,12 +27,19 @@ const emit = defineEmits(["edit", "menu"]);
         </BaseButton>
       </div>
 
-      <!-- Cover image -->
+      <!-- Cover image or Placeholder -->
       <img
+        v-if="book.coverImage"
         :alt="book.title"
         :src="book.coverImage"
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
+      <div
+        v-else
+        class="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 transition-transform duration-500 group-hover:scale-105"
+      >
+        <BookOpenIcon class="w-16 h-16" />
+      </div>
 
       <!-- Three-dot menu -->
       <div class="absolute top-2 right-2 z-20">
