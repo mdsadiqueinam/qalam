@@ -4,8 +4,6 @@ import {
   Squares2X2Icon,
   MagnifyingGlassIcon,
 } from "@heroicons/vue/24/outline";
-import ThemeToggle from "@components/common/ThemeToggle.vue";
-import BaseInput from "@shared/components/BaseInput.vue";
 import { ref } from "vue";
 
 // --- Vars
@@ -50,7 +48,7 @@ const tabs = [{ label: "My library", icon: Squares2X2Icon, to: "/" }];
     <div class="flex items-center gap-4">
       <!-- Search bar (hidden on mobile) -->
       <div class="hidden sm:flex items-center h-8 w-48 lg:w-64">
-        <BaseInput
+        <BaseTextInput
           v-model="searchQuery"
           placeholder="Search manuscripts..."
           size="sm"
@@ -59,7 +57,7 @@ const tabs = [{ label: "My library", icon: Squares2X2Icon, to: "/" }];
           <template #icon>
             <MagnifyingGlassIcon class="w-4 h-4 text-primary/50 shrink-0" />
           </template>
-        </BaseInput>
+        </BaseTextInput>
       </div>
 
       <!-- Teleport target for dynamic header content -->
