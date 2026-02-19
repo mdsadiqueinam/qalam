@@ -8,33 +8,34 @@ import {
 
 // --- Props & models
 defineProps({
-  selectedFont: {
-    type: String,
-    default: "Noto Serif (Arabic)",
-  },
   wordCount: {
     type: Number,
     default: 0,
   },
 });
-
-const emit = defineEmits(["format", "align", "list", "fontChange"]);
+const font = defineModel("font", {
+  type: String,
+  default: "Noto Serif (Arabic)",
+});
+const formats = defineModel("formats", { type: Array, default: () => [] });
+const align = defineModel("align", { type: String, default: "right" });
+const list = defineModel("list", { type: Boolean, default: false });
 
 // --- Handlers
-function handleFormat(type) {
-  emit("format", type);
+function toggleFormat(type) {
+  if (formats.value.includes(type)) {
+    formats.value = formats.value.filter((f) => f !== type);
+  } else {
+    formats.value = [...formats.value, type];
+  }
 }
 
-function handleAlign(alignment) {
-  emit("align", alignment);
+function setAlign(alignment) {
+  align.value = alignment;
 }
 
-function handleList() {
-  emit("list");
-}
-
-function handleFontChange(event) {
-  emit("fontChange", event.target.value);
+function toggleList() {
+  list.value = !list.value;
 }
 </script>
 
@@ -46,7 +47,8 @@ function handleFontChange(event) {
       <!-- Bold Button (using B text) -->
       <button
         class="p-1.5 text-xs text-sidebar-text hover:bg-sidebar hover:text-primary rounded transition-all font-bold"
-        @click="handleFormat('bold')"
+        :class="{ 'bg-primary/10 text-primary': formats.includes('bold') }"
+        @click="toggleFormat('bold')"
       >
         B
       </button>
@@ -54,7 +56,8 @@ function handleFontChange(event) {
       <!-- Italic Button (using I text) -->
       <button
         class="p-1.5 text-xs text-sidebar-text hover:bg-sidebar hover:text-primary rounded transition-all italic font-serif"
-        @click="handleFormat('italic')"
+        :class="{ 'bg-primary/10 text-primary': formats.includes('italic') }"
+        @click="toggleFormat('italic')"
       >
         I
       </button>
@@ -62,7 +65,8 @@ function handleFontChange(event) {
       <!-- Underline Button (using U text) -->
       <button
         class="p-1.5 text-xs text-sidebar-text hover:bg-sidebar hover:text-primary rounded transition-all underline"
-        @click="handleFormat('underline')"
+        :class="{ 'bg-primary/10 text-primary': formats.includes('underline') }"
+        @click="toggleFormat('underline')"
       >
         U
       </button>
@@ -72,7 +76,8 @@ function handleFontChange(event) {
       <!-- Align Right -->
       <button
         class="p-1.5 text-sidebar-text hover:bg-sidebar hover:text-primary rounded transition-all"
-        @click="handleAlign('right')"
+        :class="{ 'bg-primary/10 text-primary': align === 'right' }"
+        @click="setAlign('right')"
       >
         <Bars3BottomRightIcon class="w-4 h-4" />
       </button>
@@ -80,7 +85,8 @@ function handleFontChange(event) {
       <!-- Align Center -->
       <button
         class="p-1.5 text-sidebar-text hover:bg-sidebar hover:text-primary rounded transition-all"
-        @click="handleAlign('center')"
+        :class="{ 'bg-primary/10 text-primary': align === 'center' }"
+        @click="setAlign('center')"
       >
         <Bars3CenterLeftIcon class="w-4 h-4" />
       </button>
@@ -88,7 +94,8 @@ function handleFontChange(event) {
       <!-- Align Left -->
       <button
         class="p-1.5 text-sidebar-text hover:bg-sidebar hover:text-primary rounded transition-all"
-        @click="handleAlign('left')"
+        :class="{ 'bg-primary/10 text-primary': align === 'left' }"
+        @click="setAlign('left')"
       >
         <Bars3BottomLeftIcon class="w-4 h-4" />
       </button>
@@ -98,7 +105,8 @@ function handleFontChange(event) {
       <!-- Bullet List -->
       <button
         class="p-1.5 text-sidebar-text hover:bg-sidebar hover:text-primary rounded transition-all"
-        @click="handleList"
+        :class="{ 'bg-primary/10 text-primary': list }"
+        @click="toggleList"
       >
         <ListBulletIcon class="w-4 h-4" />
       </button>
@@ -107,9 +115,8 @@ function handleFontChange(event) {
     <div class="flex items-center gap-3">
       <!-- Font Selector -->
       <select
+        v-model="font"
         class="rounded border-none bg-transparent text-xs font-medium text-main-text-muted focus:ring-0 cursor-pointer"
-        :value="selectedFont"
-        @change="handleFontChange"
       >
         <option>Noto Serif (Arabic)</option>
         <option>Amiri</option>

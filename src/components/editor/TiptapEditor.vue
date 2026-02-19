@@ -21,6 +21,11 @@ import EditorToolbar from "./EditorToolbar.vue";
 const modelValue = defineModel({ type: String, default: "" });
 const font = ref("Noto Naskh Arabic");
 
+// --- Refs for Toolbar
+const formats = ref([]);
+const align = ref("right");
+const list = ref(false);
+
 // --- Use
 const editor = useEditor({
   extensions: [
@@ -44,7 +49,58 @@ const editor = useEditor({
   },
   onUpdate({ editor: e }) {
     modelValue.value = e.getHTML();
+    updateToolbarState(e);
   },
+  onSelectionUpdate({ editor: e }) {
+    updateToolbarState(e);
+  },
+});
+
+function updateToolbarState(e) {
+  // Formats
+  const activeFormats = [];
+  if (e.isActive("bold")) activeFormats.push("bold");
+  if (e.isActive("italic")) activeFormats.push("italic");
+  if (e.isActive("underline")) activeFormats.push("underline");
+  formats.value = activeFormats;
+
+  // Align
+  if (e.isActive({ textAlign: "left" })) align.value = "left";
+  else if (e.isActive({ textAlign: "center" })) align.value = "center";
+  else align.value = "right"; // Default to right for RTL
+
+  // List
+  list.value = e.isActive("bulletList");
+}
+
+// --- Watchers to apply changes from Toolbar
+watch(formats, (newFormats) => {
+  if (!editor.value) return;
+  const isBold = newFormats.includes("bold");
+  if (editor.value.isActive("bold") !== isBold)
+    editor.value.chain().focus().toggleBold().run();
+
+  const isItalic = newFormats.includes("italic");
+  if (editor.value.isActive("italic") !== isItalic)
+    editor.value.chain().focus().toggleItalic().run();
+
+  const isUnderline = newFormats.includes("underline");
+  if (editor.value.isActive("underline") !== isUnderline)
+    editor.value.chain().focus().toggleUnderline().run();
+});
+
+watch(align, (newAlign) => {
+  if (!editor.value) return;
+  if (!editor.value.isActive({ textAlign: newAlign })) {
+    editor.value.chain().focus().setTextAlign(newAlign).run();
+  }
+});
+
+watch(list, (newList) => {
+  if (!editor.value) return;
+  if (editor.value.isActive("bulletList") !== newList) {
+    editor.value.chain().focus().toggleBulletList().run();
+  }
 });
 
 // --- Computed
@@ -76,27 +132,7 @@ function deleteChar() {
 }
 
 // Toolbar Handlers
-function handleFormat(type) {
-  if (!editor.value) return;
-  if (type === "bold") editor.value.chain().focus().toggleBold().run();
-  if (type === "italic") editor.value.chain().focus().toggleItalic().run();
-  if (type === "underline")
-    editor.value.chain().focus().toggleUnderline().run();
-}
-
-function handleAlign(alignment) {
-  if (!editor.value) return;
-  editor.value.chain().focus().setTextAlign(alignment).run();
-}
-
-function handleList() {
-  if (!editor.value) return;
-  editor.value.chain().focus().toggleBulletList().run();
-}
-
-function handleFontChange(newFont) {
-  font.value = newFont;
-}
+// Toolbar Handlers removed as logic is now in watchers
 
 // --- Exposed
 defineExpose({ editor, insertText, deleteChar });
@@ -107,12 +143,11 @@ defineExpose({ editor, insertText, deleteChar });
     <!-- Toolbar -->
     <EditorToolbar
       v-if="editor"
-      :selectedFont="font"
+      v-model:font="font"
+      v-model:formats="formats"
+      v-model:align="align"
+      v-model:list="list"
       :wordCount="wordCount"
-      @format="handleFormat"
-      @align="handleAlign"
-      @list="handleList"
-      @fontChange="handleFontChange"
     />
 
     <!-- Bubble Menu Toolbar (appears on text selection) -->
