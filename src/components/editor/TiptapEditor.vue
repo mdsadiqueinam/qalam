@@ -2,7 +2,6 @@
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import { BubbleMenu } from "@tiptap/vue-3/menus";
 import { StarterKit } from "@tiptap/starter-kit";
-import { Underline } from "@tiptap/extension-underline";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { FontFamily } from "@tiptap/extension-font-family";
 import { TextStyle } from "@tiptap/extension-text-style";
@@ -30,7 +29,6 @@ const list = ref(false);
 const editor = useEditor({
   extensions: [
     StarterKit,
-    Underline,
     TextStyle,
     FontFamily,
     TextAlign.configure({
