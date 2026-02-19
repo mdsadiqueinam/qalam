@@ -4,21 +4,9 @@ import BaseButton from "@shared/components/BaseButton.vue";
 
 // --- Props & models
 defineProps({
-  title: {
-    type: String,
+  book: {
+    type: Object,
     required: true,
-  },
-  editedAt: {
-    type: String,
-    default: "",
-  },
-  coverUrl: {
-    type: String,
-    default: "",
-  },
-  coverAlt: {
-    type: String,
-    default: "",
   },
 });
 
@@ -41,8 +29,8 @@ const emit = defineEmits(["edit", "menu"]);
 
       <!-- Cover image -->
       <img
-        :alt="coverAlt || title"
-        :src="coverUrl"
+        :alt="book.title"
+        :src="book.coverImage"
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
 
@@ -65,9 +53,9 @@ const emit = defineEmits(["edit", "menu"]);
       <h3
         class="font-bold text-main-text leading-tight font-display mb-1 truncate"
       >
-        {{ title }}
+        {{ book.title }}
       </h3>
-      <p class="text-xs text-main-text-muted font-sans">{{ editedAt }}</p>
+      <p class="text-xs text-main-text-muted font-sans">{{ book.editedAt }}</p>
     </div>
   </div>
 </template>

@@ -56,10 +56,7 @@ function createBook() {
         <LibraryBookCard
           v-for="book in filteredBooks"
           :key="book.id"
-          :title="book.title"
-          :editedAt="book.editedAt"
-          :coverUrl="book.coverUrl"
-          :coverAlt="book.coverAlt"
+          :book="book"
         />
       </div>
     </div>

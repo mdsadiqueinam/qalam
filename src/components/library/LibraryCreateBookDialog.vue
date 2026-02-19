@@ -1,9 +1,6 @@
 <script setup>
 import { reactive, ref } from "vue";
 import { db } from "@root/db/index";
-import BaseDialog from "@shared/components/BaseDialog.vue";
-import BaseInput from "@shared/components/BaseInput.vue";
-import BaseButton from "@shared/components/BaseButton.vue";
 
 // --- Vars (ref, reactive)
 const modelValue = defineModel({ type: Boolean, default: false });

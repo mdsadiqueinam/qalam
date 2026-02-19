@@ -1,16 +1,9 @@
 <script setup>
-import { computed } from "vue";
-import {
-  TransitionRoot,
-  TransitionChild,
-  Dialog,
-  DialogPanel,
-} from "@headlessui/vue";
-import { XMarkIcon } from "@heroicons/vue/24/outline";
-import { useWindowSize } from "@vueuse/core";
+import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
+import { XMarkIcon } from '@heroicons/vue/24/outline'
 
 // --- Use ---
-const { width: screenWidth } = useWindowSize();
+const { width: screenWidth } = useWindowSize()
 
 // --- Props & models ---
 const props = defineProps({
@@ -20,38 +13,44 @@ const props = defineProps({
   },
   name: {
     type: String,
-    default: "true",
+    default: 'true',
   },
   nameAlign: {
     type: String,
-    default: "left",
+    default: 'left',
   },
   onSubmit: {
     type: [Function, null],
     default: null,
   },
-});
+})
 
 const modelValue = defineModel({
   type: Boolean,
   default: false,
-});
+})
 
 // --- Emits ---
-const emit = defineEmits(["close", "submit"]);
+const emit = defineEmits(['close', 'submit'])
+
+// --- Vars ---
+// None
 
 // --- Handlers ---
 function close() {
-  emit("close");
-  modelValue.value = false;
+  emit('close')
+  modelValue.value = false
 }
 
 function submit() {
-  emit("submit");
+  emit('submit')
 }
 
 // --- Watchers & computed ---
-const isSmallScreen = computed(() => screenWidth.value < 768);
+const isSmallScreen = computed(() => screenWidth.value < 768)
+
+// --- Lifecycle hooks & related ---
+// None
 </script>
 
 <template>
@@ -82,9 +81,7 @@ const isSmallScreen = computed(() => screenWidth.value < 768);
           'top-10 w-[calc(100%-30px)]': isSmallScreen,
         }"
       >
-        <div
-          class="animate-fade-in flex min-h-full items-center justify-center"
-        >
+        <div class="animate-fade-in flex min-h-full items-center justify-center">
           <DialogPanel
             class="animate-fadeIn transform border border-divider bg-main align-middle shadow-xl ring-1 ring-black/5 transition-all"
             :class="{
@@ -121,17 +118,12 @@ const isSmallScreen = computed(() => screenWidth.value < 768);
               </header>
               <div class="max-h-[calc(100vh-200px)] overflow-y-auto">
                 <slot name="contentNoPadding">
-                  <div
-                    class="max-h-[calc(100vh-200px)] overflow-hidden overflow-y-auto px-4 py-3"
-                  >
+                  <div class="max-h-[calc(100vh-200px)] overflow-hidden overflow-y-auto px-4 py-3">
                     <slot />
                   </div>
                 </slot>
               </div>
-              <div
-                v-if="$slots.footer"
-                class="flex justify-end gap-3 border-t border-divider p-4"
-              >
+              <div v-if="$slots.footer" class="flex justify-end gap-3 border-t border-divider p-4">
                 <slot name="footer" />
               </div>
             </form>

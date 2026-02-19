@@ -114,35 +114,40 @@
 
   :root,
   .light {
+    /* Priority remains high-contrast */
     --priority-high: #ef4444;
     --priority-medium: #f59e0b;
     --priority-low: #10b981;
 
-    --divider: #e0e0e0;
-    --divider-subtle: #eef1f566;
-    --divider-hover: #d8dce3;
-    --divider-outline: #c3cad6aa;
+    /* Dividers: Soft sage/grey mix */
+    --divider: #e2e8e2;
+    --divider-subtle: #f0f4f066;
+    --divider-hover: #d1dbd1;
+    --divider-outline: #cbd5cb66;
 
-    --main: #f6f8f6;
-    --main-subtle-hover: #edf2ff;
-    --main-selected: #e6f4ff;
-    --main-text: #1c2434;
-    --main-text-hover: #111827;
-    --main-text-muted: #9ca3af;
-    --main-selected-text: #111827;
-    --main-unselected: #f0f4fb;
-    --main-unselected-text: #94a3b8;
-    --main-unselected-hover: #e8edf6;
+    /* Main: Clean, slightly warm background */
+    --main: #f9fbf9;
+    --main-subtle-hover: #f0f7f0;
+    --main-selected: #ecfdf5; /* Very light mint */
+    --main-text: #1a2e1a; /* Deep forest charcoal */
+    --main-text-hover: #064e3b;
+    --main-text-muted: #6b7a6b;
+    --main-selected-text: #169c16;
+    --main-unselected: #f1f5f1;
+    --main-unselected-text: #64748b;
+    --main-unselected-hover: #e8eee8;
 
+    /* Sidebar: Pure white with green accents */
     --sidebar: #ffffff;
-    --sidebar-text: #4b5563;
-    --sidebar-text-hover: #1f2937;
-    --sidebar-hover: #edf2ff;
-    --sidebar-selected: #e6f4ff;
-    --sidebar-unselected: #f8fafc;
-    --sidebar-unselected-hover: #eef2f7;
-    --sidebar-text-selected: #1c2434;
+    --sidebar-text: #4a5a4a;
+    --sidebar-text-hover: #169c16;
+    --sidebar-hover: #f0fdf4;
+    --sidebar-selected: #dcfce7;
+    --sidebar-unselected: #fcfdfc;
+    --sidebar-unselected-hover: #f3f4f3;
+    --sidebar-text-selected: #115e59;
 
+    /* Primary (Kept as requested) */
     --primary: #169c16;
     --primary-hover: #128b14;
     --primary-text: #ffffff;
@@ -150,37 +155,42 @@
 
     --secondary: #169c16;
 
-    --border-subtle: #e0e0e0;
-    --border-default: #e0e0e0;
-    --border-hover: #adb8c9;
+    /* Borders */
+    --border-subtle: #e5e9e5;
+    --border-default: #d1d9d1;
+    --border-hover: #169c16;
   }
 
   .dark {
-    --divider: #3b4754;
-    --divider-subtle: #2f374466;
-    --divider-hover: #3d4655;
-    --divider-outline: #4e586baa;
+    /* Dividers: Deep moss/carbon */
+    --divider: #2d3a2d;
+    --divider-subtle: #1e291e66;
+    --divider-hover: #3a4a3a;
+    --divider-outline: #455445aa;
 
-    --main: #112111;
-    --main-subtle-hover: #141b23;
-    --main-text: #e0e0e0;
-    --main-text-hover: #f5f7fa;
-    --main-text-muted: #9daab8;
-    --main-unselected: #182330;
-    --main-unselected-text: #8a94a6;
-    --main-unselected-hover: #1f2c3a;
-    --main-selected: #1c2533;
-    --main-selected-text: #f5f7fa;
+    /* Main: Dark forest theme */
+    --main: #0d130d;
+    --main-subtle-hover: #162016;
+    --main-text: #e2e8e2;
+    --main-text-hover: #ffffff;
+    --main-text-muted: #8a9a8a;
+    --main-unselected: #1a241a;
+    --main-unselected-text: #7c8a7c;
+    --main-unselected-hover: #223022;
+    --main-selected: #1e2e1e;
+    --main-selected-text: #22c55e;
 
-    --sidebar: #1c2127;
-    --sidebar-text: #b5c4d6;
-    --sidebar-text-hover: #c5d2e3;
+    /* Sidebar: Darker than main for depth */
+    --sidebar: #090e09;
+    --sidebar-text: #a0afa0;
+    --sidebar-text-hover: #22c55e;
     --sidebar-text-selected: #ffffff;
-    --sidebar-hover: #141b23;
-    --sidebar-selected: #283240;
-    --sidebar-unselected: #1c2127;
-    --sidebar-unselected-hover: #232a34;
+    --sidebar-hover: #162016;
+    --sidebar-selected: #1e2e1e;
+    --sidebar-unselected: #090e09;
+    --sidebar-unselected-hover: #141b14;
 
+    /* Primary (Kept as requested) */
     --primary: #1eb81e;
     --primary-hover: #1aa01a;
     --primary-text: #ffffff;
@@ -188,9 +198,10 @@
 
     --secondary: #1eb81e;
 
-    --border-subtle: #3b4754;
-    --border-default: #3b4754;
-    --border-hover: #4d5667;
+    /* Borders */
+    --border-subtle: #243124;
+    --border-default: #2d3a2d;
+    --border-hover: #1eb81e;
   }
 }
 
