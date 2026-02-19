@@ -57,6 +57,7 @@ declare module 'vue' {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     KeyButton: typeof import('./src/components/studio/KeyButton.vue')['default']
     LibraryBookCard: typeof import('./src/components/library/LibraryBookCard.vue')['default']
+    LibraryBookPageId: typeof import('./src/components/library/LibraryBookPageId.vue')['default']
     LibraryCreateBookDialog: typeof import('./src/components/library/LibraryCreateBookDialog.vue')['default']
     LibraryEmptyCard: typeof import('./src/components/library/LibraryEmptyCard.vue')['default']
     LibraryIndex: typeof import('./src/components/library/LibraryIndex.vue')['default']
