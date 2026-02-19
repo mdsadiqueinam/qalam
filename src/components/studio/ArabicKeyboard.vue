@@ -17,6 +17,7 @@ import { ARABIC_LAYOUTS } from "@root/constants/keyboard";
 import { useEventListener } from "@vueuse/core";
 
 // --- Props & models
+const emit = defineEmits(["keyPress"]);
 
 // --- Vars (ref, reactive)
 const keyboardLayout = ref([]); // Array<Array<{ code, type, englishKey?, arabicKey?, label?, width? }>>
@@ -38,8 +39,18 @@ const selectedLayout = computed(
 );
 
 // --- Handlers
-function handleKeyPress(_key) {
-  // TODO
+/**
+ *
+ * @param event {KeyboardEvent}
+ * @param mapping {{  }}
+ */
+function handleKeyPress(event, mapping) {
+  const ignoredKeys = ["ControlLeft", "ControlRight", "AltLeft", "AltRight"];
+  if (ignoredKeys.some((key) => pressedKeys.value.has(key))) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+  emit("keyPress", shiftState.value ? mapping.shift : mapping.default);
 }
 
 async function detectKeyboardLayout() {
@@ -66,6 +77,10 @@ const rowClasses = computed(() => [
 // --- Lifecycle
 function onKeyDown(e) {
   pressedKeys.value = new Set([...pressedKeys.value, e.code]);
+  const mapping = selectedLayout.value.map[e.code];
+  if (mapping) {
+    handleKeyPress(e, mapping);
+  }
 }
 
 function onKeyUp(e) {
@@ -165,7 +180,6 @@ detectKeyboardLayout();
             :alt="altState"
             :variant="getVariant(key)"
             :width="key.width"
-            @keyPress="handleKeyPress(key)"
           />
 
           <!-- Arrow keys (appended to bottom row) -->

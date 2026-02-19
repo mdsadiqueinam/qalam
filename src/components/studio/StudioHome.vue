@@ -11,19 +11,7 @@ const tiptapEditor = ref(null);
 
 function handleKeyPress(key) {
   if (!tiptapEditor.value) return;
-  if (key.type === "special") {
-    if (key.code === "Backspace") {
-      tiptapEditor.value.deleteChar();
-    } else if (key.code === "Enter") {
-      tiptapEditor.value.editor?.chain().focus().splitBlock().run();
-    } else if (key.code === "Space") {
-      tiptapEditor.value.insertText(" ");
-    }
-    return;
-  }
-  if (key.englishKey) {
-    // TODO: insert arabic char when arabicKey is wired
-  }
+  tiptapEditor.value.insertText(key);
 }
 </script>
 
