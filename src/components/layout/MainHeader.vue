@@ -63,6 +63,7 @@ const tabs = [{ label: "My library", icon: Squares2X2Icon, to: "/" }];
       <!-- Teleport target for dynamic header content -->
       <div id="header-content" class="flex items-center gap-4"></div>
 
+      <AuthButton />
       <ThemeToggle />
     </div>
   </header>

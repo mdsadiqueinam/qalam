@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref } from "vue";
+import { GlobeAltIcon, LockClosedIcon } from "@heroicons/vue/24/outline";
 import { db } from "@root/db/index";
 
 // --- Vars (ref, reactive)
@@ -8,6 +9,7 @@ const modelValue = defineModel({ type: Boolean, default: false });
 const form = reactive({
   title: "",
   coverImage: "",
+  isPublic: false,
 });
 const isLoading = ref(false);
 const errorMsg = ref("");
@@ -17,6 +19,7 @@ function close() {
   modelValue.value = false;
   form.title = "";
   form.coverImage = "";
+  form.isPublic = false;
   errorMsg.value = "";
 }
 
@@ -33,6 +36,8 @@ async function handleSubmit() {
     const book = new db.Book({
       title: form.title.trim(),
       coverImage: form.coverImage.trim() || undefined,
+      isPublic: form.isPublic,
+      // userId is set automatically by db/index.js from Firebase Auth state
     });
     const success = await book.create();
     if (success) {
@@ -75,6 +80,39 @@ async function handleSubmit() {
         placeholder="https://..."
         :disabled="isLoading"
       />
+
+      <!-- Visibility toggle -->
+      <div class="flex flex-col gap-1">
+        <span class="text-sm font-medium text-main-text">Visibility</span>
+        <button
+          type="button"
+          class="flex items-center gap-3 rounded-lg border p-3 text-left transition-colors"
+          :class="
+            form.isPublic
+              ? 'border-primary bg-primary/5 text-primary'
+              : 'border-border-subtle bg-sidebar text-main-text'
+          "
+          :disabled="isLoading"
+          @click="form.isPublic = !form.isPublic"
+        >
+          <component
+            :is="form.isPublic ? GlobeAltIcon : LockClosedIcon"
+            class="w-5 h-5 shrink-0"
+          />
+          <div>
+            <p class="text-sm font-semibold leading-none mb-0.5">
+              {{ form.isPublic ? "Public" : "Private" }}
+            </p>
+            <p class="text-xs text-main-text-muted leading-snug">
+              {{
+                form.isPublic
+                  ? "Visible to all users"
+                  : "Only visible to you"
+              }}
+            </p>
+          </div>
+        </button>
+      </div>
     </div>
 
     <!-- Footer -->

@@ -1,5 +1,5 @@
 <script setup>
-import { EllipsisVerticalIcon, BookOpenIcon } from "@heroicons/vue/24/outline";
+import { EllipsisVerticalIcon, BookOpenIcon, GlobeAltIcon, LockClosedIcon } from "@heroicons/vue/24/outline";
 import BaseButton from "@shared/components/BaseButton.vue";
 
 // --- Props & models
@@ -61,6 +61,22 @@ function editBook() {
             <EllipsisVerticalIcon class="w-5 h-5 text-main-text" />
           </template>
         </BaseButton>
+      </div>
+
+      <!-- Public / Private badge -->
+      <div class="absolute top-2 left-2 z-20">
+        <span
+          class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+          :class="
+            book.isPublic
+              ? 'bg-primary/90 text-primary-text'
+              : 'bg-black/50 text-white'
+          "
+        >
+          <GlobeAltIcon v-if="book.isPublic" class="w-3 h-3" />
+          <LockClosedIcon v-else class="w-3 h-3" />
+          {{ book.isPublic ? "Public" : "Private" }}
+        </span>
       </div>
     </div>
 
