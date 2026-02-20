@@ -49,7 +49,7 @@ function handleClick() {
     @click="handleClick"
   >
     <!-- Normal key: Arabic center + English top-left -->
-    <template v-if="variant === 'default'">
+    <template v-if="variant === 'default' || englishKey.default?.length < 2">
       <!-- Arabic character (center) -->
       <span
         class="font-serif text-lg font-bold"
@@ -82,10 +82,7 @@ function handleClick() {
 
     <!-- Special key: just show the label centered -->
     <template v-else>
-      <span
-        class="font-bold"
-        :class="[englishKey.default?.length > 4 ? 'text-[10px]' : 'text-xs']"
-      >
+      <span class="font-bold text-[10px]">
         {{ englishKey.default }}
       </span>
     </template>

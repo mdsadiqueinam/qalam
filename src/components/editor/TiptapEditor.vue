@@ -18,12 +18,12 @@ import { watch } from "vue";
 
 // --- Props & models
 const modelValue = defineModel({ type: String, default: "" });
-const font = ref("Noto Naskh Arabic");
+const font = useLocalStorage("qalam-editor-font", "Noto Naskh Arabic");
 
 // --- Refs for Toolbar
-const formats = ref([]);
-const align = ref("right");
-const list = ref(false);
+const formats = useLocalStorage("qalam-editor-formats", []);
+const align = useLocalStorage("qalam-editor-align", "right");
+const list = useLocalStorage("qalam-editor-list", false);
 
 // --- Use
 const editor = useEditor({

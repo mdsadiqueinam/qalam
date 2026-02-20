@@ -24,7 +24,7 @@ const keyboardLayout = ref([]); // Array<Array<{ code, type, englishKey?, arabic
 const layoutSupported = ref(true);
 const layoutName = ref("QWERTY");
 const pressedKeys = ref(new Set());
-const selectedLayoutId = ref("standard");
+const selectedLayoutId = useLocalStorage("qalam-keyboard-layout", "standard");
 const shiftState = computed(
   () =>
     pressedKeys.value.has("ShiftLeft") || pressedKeys.value.has("ShiftRight"),

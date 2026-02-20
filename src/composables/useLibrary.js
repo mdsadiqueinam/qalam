@@ -1,10 +1,10 @@
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useDexieLiveQuery } from "@utils/useDexieLiveQuery";
 import { db } from "@root/db/index";
 
 export function useLibrary() {
   // --- Vars
-  const activeTab = ref("all");
+  const activeTab = useLocalStorage("qalam-library-active-tab", "all");
   const books = useDexieLiveQuery(() => db.books.toArray(), {
     initialValue: [],
   });
