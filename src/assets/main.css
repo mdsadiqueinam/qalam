@@ -260,3 +260,7 @@
 button {
   @apply cursor-pointer;
 }
+
+body {
+  font-optical-sizing: auto;
+}

@@ -5,6 +5,7 @@ import {
   Bars3BottomLeftIcon,
   ListBulletIcon,
 } from "@heroicons/vue/24/outline";
+import { FONTS } from "@root/constants/editor";
 
 // --- Props & models
 defineProps({
@@ -118,9 +119,7 @@ function toggleList() {
         v-model="font"
         class="rounded border-none bg-transparent text-xs font-medium text-main-text-muted focus:ring-0 cursor-pointer"
       >
-        <option>Noto Serif (Arabic)</option>
-        <option>Amiri</option>
-        <option>Traditional Arabic</option>
+        <option v-for="f in FONTS" :key="f">{{ f }}</option>
       </select>
 
       <div class="h-4 w-px bg-divider" />

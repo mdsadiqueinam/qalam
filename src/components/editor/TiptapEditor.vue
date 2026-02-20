@@ -15,6 +15,7 @@ import {
   ListBulletIcon,
 } from "@heroicons/vue/24/outline";
 import EditorToolbar from "./EditorToolbar.vue";
+import { watch } from "vue";
 
 // --- Props & models
 const modelValue = defineModel({ type: String, default: "" });
@@ -40,7 +41,7 @@ const editor = useEditor({
   editorProps: {
     attributes: {
       class:
-        "prose max-w-none h-full w-full focus:outline-none font-serif text-base leading-relaxed text-main-text",
+        "prose max-w-none h-full w-full focus:outline-none  text-base leading-relaxed text-main-text",
       dir: "rtl",
       spellcheck: "false",
     },
@@ -99,6 +100,11 @@ watch(list, (newList) => {
   if (editor.value.isActive("bulletList") !== newList) {
     editor.value.chain().focus().toggleBulletList().run();
   }
+});
+
+watch(font, (newFont) => {
+  if (!editor.value) return;
+  editor.value.chain().focus().setFontFamily(newFont).run();
 });
 
 // --- Computed
@@ -254,11 +260,7 @@ defineExpose({ editor, insertText, deleteChar });
     </BubbleMenu>
 
     <!-- Editor Content -->
-    <EditorContent
-      :editor="editor"
-      class="flex-1 overflow-y-auto p-3"
-      :style="{ fontFamily: font }"
-    />
+    <EditorContent :editor="editor" class="flex-1 overflow-y-auto p-3" />
   </div>
 </template>
 
