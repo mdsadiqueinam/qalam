@@ -2,7 +2,6 @@
 import { reactive, ref } from "vue";
 import { GlobeAltIcon, LockClosedIcon } from "@heroicons/vue/24/outline";
 import { db } from "@root/db/index";
-import { currentUser } from "@root/firebase/auth";
 
 // --- Vars (ref, reactive)
 const modelValue = defineModel({ type: Boolean, default: false });
@@ -38,9 +37,7 @@ async function handleSubmit() {
       title: form.title.trim(),
       coverImage: form.coverImage.trim() || undefined,
       isPublic: form.isPublic,
-      // Set the owner's Firebase UID so access rules can be enforced.
-      // Null for guest users who are not authenticated.
-      userId: currentUser.value?.uid ?? null,
+      // userId is set automatically by db/index.js from Firebase Auth state
     });
     const success = await book.create();
     if (success) {

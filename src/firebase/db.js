@@ -150,16 +150,42 @@ export async function fetchPublicRecords(tableName) {
 }
 
 /**
- * Subscribe to real-time updates for the shared public table.
- * Use this to show public records from all users.
+ * Subscribe to document-level changes for a user's private table.
+ * Uses `docChanges()` for efficient incremental updates (added/modified/removed).
  *
+ * @param {string} userId
  * @param {string} tableName
- * @param {function(Object[]): void} callback
+ * @param {function(Array<{type: string, id: string, data: Object}>): void} onChange
  * @returns {function(): void} Unsubscribe function.
  */
-export function subscribeToPublicTable(tableName, callback) {
+export function watchTableChanges(userId, tableName, onChange) {
+  return onSnapshot(privateTableRef(userId, tableName), (snapshot) => {
+    onChange(
+      snapshot.docChanges().map((change) => ({
+        type: change.type,
+        id: change.doc.id,
+        data: change.doc.data(),
+      })),
+    );
+  });
+}
+
+/**
+ * Subscribe to document-level changes for the shared public table.
+ * Uses `docChanges()` for efficient incremental updates (added/modified/removed).
+ *
+ * @param {string} tableName
+ * @param {function(Array<{type: string, id: string, data: Object}>): void} onChange
+ * @returns {function(): void} Unsubscribe function.
+ */
+export function watchPublicTableChanges(tableName, onChange) {
   return onSnapshot(publicTableRef(tableName), (snapshot) => {
-    const records = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-    callback(records);
+    onChange(
+      snapshot.docChanges().map((change) => ({
+        type: change.type,
+        id: change.doc.id,
+        data: change.doc.data(),
+      })),
+    );
   });
 }

@@ -1,8 +1,9 @@
 /**
- * Firebase Authentication composable.
+ * Firebase Authentication helpers.
  *
  * Exposes a reactive `currentUser` ref that is kept in sync with the Firebase
- * Auth state.  Provides `signInWithGoogle` and `signOut` helpers.
+ * Auth state.  Provides `signInWithGoogle`, `signOut`, and `onAuthChange`
+ * helpers.
  *
  * When Firebase is not configured (missing env vars) these helpers are no-ops
  * and `currentUser` stays `null` so the app continues in guest-only mode.
@@ -30,6 +31,19 @@ if (isFirebaseConfigured) {
   onAuthStateChanged(firebaseAuth, (user) => {
     _currentUser.value = user;
   });
+}
+
+/**
+ * Subscribe to Firebase Auth state changes.
+ * Fires immediately with the current user (or null) and on every subsequent
+ * sign-in / sign-out event, including page-load auth restoration.
+ *
+ * @param {function(import('firebase/auth').User | null): void} callback
+ * @returns {function(): void} Unsubscribe function.
+ */
+export function onAuthChange(callback) {
+  if (!isFirebaseConfigured) return () => {};
+  return onAuthStateChanged(firebaseAuth, callback);
 }
 
 /**

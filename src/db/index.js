@@ -3,6 +3,20 @@ import relationships from "dexie-relationships";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeFirstLetter, singularize } from "@utils/string";
 import CONFIG from "./config";
+import { firebaseAuth } from "@root/firebase/index";
+
+// ---------------------------------------------------------------------------
+// Auth helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns the UID of the currently authenticated Firebase user, or `null`
+ * when running in guest (unauthenticated) mode.
+ * @returns {string | null}
+ */
+function getCurrentUserId() {
+  return firebaseAuth?.currentUser?.uid ?? null;
+}
 
 // ---------------------------------------------------------------------------
 // Schema generation
@@ -190,8 +204,32 @@ function setupObjectClasses(db) {
     const tableClassName = capitalizeFirstLetter(singularize(tableName));
     const tableClass = Dexie.defineClass(tableDef.fields);
 
+    /** Whether this table has a `userId` ownership field. */
+    const hasUserId = "userId" in tableDef.fields;
+
+    /**
+     * Check that the current user is allowed to mutate `record`.
+     * Allowed when:
+     *  - the table has no userId field (no ownership concept), OR
+     *  - record.userId is null / undefined (guest-owned, anyone may edit), OR
+     *  - record.userId matches the authenticated user's UID.
+     *
+     * @param {Object} record
+     * @returns {boolean}
+     */
+    function canMutate(record) {
+      if (!hasUserId) return true;
+      const currentUserId = getCurrentUserId();
+      return record.userId == null || record.userId === currentUserId;
+    }
+
     // create – insert a new record
     tableClass.prototype.create = async function () {
+      // Auto-stamp userId from the current Firebase Auth session.
+      // Components and composables must NOT set userId manually.
+      if (hasUserId && this.userId == null) {
+        this.userId = getCurrentUserId();
+      }
       if (!(await applyDefaultsAndValidate(tableDef, this))) return false;
       await logTransaction(db, tableName, tableDef, "create", this);
       await db[tableName].add(this);
@@ -200,6 +238,12 @@ function setupObjectClasses(db) {
 
     // save – update an existing record
     tableClass.prototype.save = async function () {
+      if (!canMutate(this)) {
+        console.error(
+          `[db] Access denied: cannot update '${tableName}' owned by another user`,
+        );
+        return false;
+      }
       if (!(await applyDefaultsAndValidate(tableDef, this))) return false;
       await logTransaction(db, tableName, tableDef, "update", this);
       await db[tableName].update(this.id, this);
@@ -213,6 +257,12 @@ function setupObjectClasses(db) {
           `'stateId' is not defined on '${tableName}'. Use delete() instead.`,
         );
       }
+      if (!canMutate(this)) {
+        console.error(
+          `[db] Access denied: cannot soft-delete '${tableName}' owned by another user`,
+        );
+        return false;
+      }
       this.stateId = "DELETED";
       await logTransaction(db, tableName, tableDef, "update", this);
       await db[tableName].update(this.id, this);
@@ -223,6 +273,12 @@ function setupObjectClasses(db) {
       if (this.stateId === undefined) {
         throw new Error(`'stateId' is not defined on '${tableName}'.`);
       }
+      if (!canMutate(this)) {
+        console.error(
+          `[db] Access denied: cannot restore '${tableName}' owned by another user`,
+        );
+        return false;
+      }
       this.stateId = "ACTIVE";
       await logTransaction(db, tableName, tableDef, "update", this);
       await db[tableName].update(this.id, this);
@@ -230,6 +286,12 @@ function setupObjectClasses(db) {
 
     // delete – hard delete
     tableClass.prototype.delete = async function () {
+      if (!canMutate(this)) {
+        console.error(
+          `[db] Access denied: cannot delete '${tableName}' owned by another user`,
+        );
+        return;
+      }
       await logTransaction(db, tableName, tableDef, "delete", this);
       await db[tableName].delete(this.id);
     };
