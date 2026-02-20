@@ -13,6 +13,7 @@
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.2.0",
     "@tiptap/core": "^3.19.0",
+    "@tiptap/extension-document": "^3.20.0",
     "@tiptap/extension-text-align": "^3.19.0",
     "@tiptap/extension-text-style": "^3.19.0",
     "@tiptap/extension-underline": "^3.19.0",

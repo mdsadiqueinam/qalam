@@ -4,6 +4,8 @@ import { BubbleMenu } from "@tiptap/vue-3/menus";
 import { StarterKit } from "@tiptap/starter-kit";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { TextStyleKit } from "@tiptap/extension-text-style";
+import { CustomDocument } from "./extensions/Document";
+import { Page } from "./extensions/Page";
 import {
   BoldIcon,
   ItalicIcon,
@@ -28,7 +30,9 @@ const list = useLocalStorage("qalam-editor-list", false);
 // --- Use
 const editor = useEditor({
   extensions: [
-    StarterKit,
+    CustomDocument,
+    Page,
+    StarterKit.configure({ document: false }),
     TextStyleKit,
     TextAlign.configure({
       types: ["heading", "paragraph"],
@@ -39,7 +43,7 @@ const editor = useEditor({
   editorProps: {
     attributes: {
       class:
-        "prose max-w-none h-full w-full focus:outline-none  text-base leading-relaxed text-main-text",
+        "focus:outline-none w-full max-w-none prose prose-p:my-1 prose-headings:mb-2 prose-ol:my-1 prose-ul:my-1",
       dir: "rtl",
       spellcheck: "false",
     },
@@ -258,7 +262,14 @@ defineExpose({ editor, insertText, deleteChar });
     </BubbleMenu>
 
     <!-- Editor Content -->
-    <EditorContent :editor="editor" class="flex-1 overflow-y-auto p-3" />
+    <div
+      class="flex-1 overflow-y-auto bg-sidebar-unselected rounded-b-xl pb-12 pt-6 flex flex-col items-center"
+    >
+      <EditorContent
+        :editor="editor"
+        class="w-full h-full flex flex-col items-center"
+      />
+    </div>
   </div>
 </template>
 
@@ -267,11 +278,37 @@ defineExpose({ editor, insertText, deleteChar });
   direction: rtl;
   text-align: right;
   height: 100%;
+  width: 100%;
   caret-color: var(--color-primary, #6366f1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+:deep(.page-container) {
+  width: 210mm;
+  min-height: 297mm;
+  background-color: white;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  margin: 0 auto;
+  padding: 2.54cm; /* Standard 1 inch margins */
+  box-sizing: border-box;
+  position: relative;
+  border-radius: 2px;
+}
+
+.dark :deep(.page-container) {
+  background-color: #1e293b; /* darker bg for pages in dark mode */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4);
 }
 
 :deep(.tiptap p) {
   margin: 0 0 0.5em;
+  font-size: 1.1rem;
+  line-height: 1.8;
 }
 
 :deep(.tiptap ul) {
