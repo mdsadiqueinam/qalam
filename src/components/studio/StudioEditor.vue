@@ -28,6 +28,6 @@ function handleKeyPress(key) {
     </div>
 
     <!-- On-Screen Keyboard -->
-    <ArabicKeyboard @keyPress="handleKeyPress" />
+    <ArabicKeyboard v-if="false" @keyPress="handleKeyPress" />
   </div>
 </template>

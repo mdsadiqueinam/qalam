@@ -296,6 +296,10 @@ defineExpose({ editor, insertText, deleteChar });
 :deep(.page-container) {
   width: 210mm;
   height: 297mm;
+  min-height: 297mm;
+  min-width: 210mm;
+  max-width: 210mm;
+  max-height: 297mm;
   overflow: hidden;
   background-color: white;
   border: 1px solid var(--color-border-default, #d1d9d1);
