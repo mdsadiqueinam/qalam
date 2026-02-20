@@ -2,7 +2,7 @@ import { computed, ref, watch, onUnmounted } from "vue";
 import { useDexieLiveQuery } from "@utils/useDexieLiveQuery";
 import { db } from "@root/db/index";
 import { currentUser } from "@root/firebase/auth";
-import { subscribeToBooks } from "@root/firebase/db";
+import { subscribeToTable } from "@root/firebase/db";
 
 export function useLibrary() {
   // --- Vars
@@ -36,7 +36,7 @@ export function useLibrary() {
 
       if (user) {
         // Authenticated: subscribe to the user's Firestore books collection
-        unsubscribeFirestore = subscribeToBooks(user.uid, (books) => {
+        unsubscribeFirestore = subscribeToTable(user.uid, "books", (books) => {
           firebaseBooks.value = books;
         });
       } else {

@@ -1,17 +1,17 @@
 /**
- * Firestore helpers for the `books` collection.
+ * Generic Firestore helpers for any table defined in `db/config.js`.
  *
- * When a user is authenticated all book reads / writes go through these
- * functions instead of the local Dexie (IndexedDB) database.
+ * All user data lives under `users/{userId}/{tableName}/{docId}` so that
+ * every authenticated user has their own isolated sub-collection per table.
  *
- * Collection path: `users/{userId}/books/{bookId}`
+ * The helpers are table-agnostic: pass the `tableName` string that matches
+ * the key used in `db/config.js` (e.g. `"books"`).
  */
 import {
   collection,
   doc,
   getDocs,
   setDoc,
-  updateDoc,
   deleteDoc,
   onSnapshot,
   serverTimestamp,
@@ -19,83 +19,74 @@ import {
 import { firestore } from "./index";
 
 /**
- * Returns a Firestore collection reference for the given user's books.
+ * Returns a Firestore collection reference for a user's table.
  * @param {string} userId
+ * @param {string} tableName - Must match a key in `db/config.js`.
  */
-function booksRef(userId) {
-  return collection(firestore, "users", userId, "books");
+function tableRef(userId, tableName) {
+  return collection(firestore, "users", userId, tableName);
 }
 
 /**
- * Returns a Firestore document reference for a single book.
+ * Returns a Firestore document reference for a single record.
  * @param {string} userId
- * @param {string} bookId
+ * @param {string} tableName
+ * @param {string} docId
  */
-function bookDocRef(userId, bookId) {
-  return doc(firestore, "users", userId, "books", bookId);
+function recordRef(userId, tableName, docId) {
+  return doc(firestore, "users", userId, tableName, docId);
 }
 
 /**
- * Fetch all books for a user as a plain array.
+ * Fetch all records for a given table as a plain array.
  * @param {string} userId
+ * @param {string} tableName
  * @returns {Promise<Object[]>}
  */
-export async function fetchBooks(userId) {
-  const snapshot = await getDocs(booksRef(userId));
+export async function fetchRecords(userId, tableName) {
+  const snapshot = await getDocs(tableRef(userId, tableName));
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
 /**
- * Write (create or overwrite) a book document in Firestore.
- * `createdAt` / `updatedAt` are kept as-is if already present;
- * `updatedAt` is refreshed to the server timestamp on every write.
+ * Write (create or overwrite) a record document in Firestore.
+ * `updatedAt` is always refreshed to the server timestamp.
  * @param {string} userId
- * @param {Object} book  - Plain book object (must contain `id`).
+ * @param {string} tableName
+ * @param {Object} record - Plain record object (must contain `id`).
  * @returns {Promise<void>}
  */
-export async function upsertBook(userId, book) {
-  const { id, ...data } = book;
-  await setDoc(bookDocRef(userId, id), {
+export async function upsertRecord(userId, tableName, record) {
+  const { id, ...data } = record;
+  await setDoc(recordRef(userId, tableName, id), {
     ...data,
     updatedAt: serverTimestamp(),
   });
 }
 
 /**
- * Partially update a book document in Firestore.
+ * Hard-delete a record document from Firestore.
  * @param {string} userId
- * @param {string} bookId
- * @param {Object} changes  - Fields to update.
+ * @param {string} tableName
+ * @param {string} docId
  * @returns {Promise<void>}
  */
-export async function updateBook(userId, bookId, changes) {
-  await updateDoc(bookDocRef(userId, bookId), {
-    ...changes,
-    updatedAt: serverTimestamp(),
-  });
+export async function deleteRecord(userId, tableName, docId) {
+  await deleteDoc(recordRef(userId, tableName, docId));
 }
 
 /**
- * Hard-delete a book document from Firestore.
- * @param {string} userId
- * @param {string} bookId
- * @returns {Promise<void>}
- */
-export async function deleteBook(userId, bookId) {
-  await deleteDoc(bookDocRef(userId, bookId));
-}
-
-/**
- * Subscribe to real-time updates for a user's books.
- * Calls `callback` with an array of book objects whenever the collection changes.
+ * Subscribe to real-time updates for a user's table.
+ * Calls `callback` with an array of records whenever the collection changes.
  *
  * @param {string} userId
+ * @param {string} tableName
  * @param {function(Object[]): void} callback
- * @returns {function(): void}  Unsubscribe function.
+ * @returns {function(): void} Unsubscribe function.
  */
-export function subscribeToBooks(userId, callback) {
-  return onSnapshot(booksRef(userId), (snapshot) => {
-    const books = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-    callback(books);
+export function subscribeToTable(userId, tableName, callback) {
+  return onSnapshot(tableRef(userId, tableName), (snapshot) => {
+    const records = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    callback(records);
   });
 }

@@ -5,14 +5,14 @@
  *   const { currentUser, isAuthenticated, signIn, signOut } = useAuth();
  *
  * On successful sign-in:
- *   1. Any books stored locally in IndexedDB are synced to Firestore.
+ *   1. All local IndexedDB data (every table from `db/config.js`) is synced to Firestore.
  *   2. A background transaction-queue consumer is started so subsequent
  *      IndexedDB writes are automatically forwarded to Firestore.
  */
 import { computed, ref } from "vue";
 import { currentUser, signInWithGoogle, signOut as firebaseSignOut } from "@root/firebase/auth";
 import {
-  syncLocalBooksToFirestore,
+  syncLocalDataToFirestore,
   startTransactionQueueConsumer,
 } from "@root/firebase/sync";
 
@@ -41,11 +41,11 @@ async function signIn() {
     const userId = currentUser.value?.uid;
     if (userId) {
       syncStatus.value = "Syncing local data…";
-      // Upload any offline books written before the user authenticated.
+      // Upload any offline data (all tables) written before the user authenticated.
       // Even if the initial sync fails, we start the consumer so future
       // transactions are forwarded and the sync can be retried.
       try {
-        await syncLocalBooksToFirestore(userId);
+        await syncLocalDataToFirestore(userId);
       } catch (error) {
         console.error("[useAuth] Initial sync failed", error);
       }
