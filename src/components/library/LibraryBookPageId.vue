@@ -1,11 +1,6 @@
 <script setup>
-import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { useDexieLiveQuery } from "@utils/useDexieLiveQuery";
 import { db } from "@root/db/index"; // Correct import path for db
-import BaseButton from "@shared/components/BaseButton.vue";
-import BaseBadge from "@shared/components/BaseBadge.vue"; // Using BaseBadge for status
-import TiptapEditor from "@components/editor/TiptapEditor.vue"; // Component for editing content
 import {
   ArrowLeftIcon,
   BookOpenIcon,
@@ -14,6 +9,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CameraIcon,
+  PhotoIcon,
 } from "@heroicons/vue/24/outline";
 
 // --- Props & models ---
@@ -26,7 +22,7 @@ const props = defineProps({
 
 // --- Use ---
 const router = useRouter();
-const bookQuery = useDexieLiveQuery(() => db.books.get(props.id), {
+const book = useDexieLiveQuery(() => db.books.get(props.id), {
   initialValue: null,
 });
 
@@ -34,73 +30,32 @@ const bookQuery = useDexieLiveQuery(() => db.books.get(props.id), {
 // N/A
 
 // --- Computed ---
-const book = computed(() => bookQuery.value);
-// Actually useDexieLiveQuery returns a ref. If the query hasn't run it might be null/undefined depending on usage.
-// The utility implementation:
-// export function useDexieLiveQuery(querier, { initialValue = [] } = {}) {
-//   const value = ref(initialValue); ... }
-// So it will be null initially if I passed null.
 
 // --- Handlers ---
 function goBack() {
   router.push("/");
 }
 
-// Watch for changes and save? Or just let the user edit?
-// The requirement is "Book View", but TiptapEditor is an editor.
-// I'll bind v-model to a writable computed that updates the DB?
-// Updating DB on every keystroke might be too much for Dexie?
-// Dexie is fast. But let's verify if we should autosave.
-// For now, I will implement it such that TiptapEditor updates a local ref,
-// and we can have a save mechanism or autosave.
-// Given the tasks, I'll just bind v-model to the book content.
-// Wait, `book` is from `useDexieLiveQuery` which is readonly-ish (re-evaluated).
-// We should copy content to a local ref when book loads, then save back.
-// Actually, `useDexieLiveQuery` updates when DB updates.
-// If I use v-model on `book.content`, it won't work directly because `book` is a computed/ref from live query.
-// I need a local state.
-
-import { ref, watch } from "vue";
-
-const content = ref("");
-const isBookLoaded = ref(false);
-
-watch(
-  book,
-  (newBook) => {
-    if (newBook && !isBookLoaded.value) {
-      content.value = newBook.content || "";
-      isBookLoaded.value = true;
-    }
-  },
-  { immediate: true },
-);
-
-// Auto-save debounce could be added here.
-// For now, let's just update the book record when content changes?
-// Or maybe just let it be for now and save explicitly?
-// The prompt didn't specify editing behavior details, just "use tiptapEditor".
-// I'll add a simple autosave watcher.
-
-let saveTimeout = null;
-watch(content, (newVal) => {
-  if (!isBookLoaded.value || !book.value) return;
-  if (newVal === book.value.content) return;
-
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => {
-    db.books.update(book.value.id, { content: newVal, updatedAt: new Date() });
-  }, 1000);
-});
+const debouncedSave = useDebounceFn(() => {
+  if (!book.value) return;
+  book.value.updatedAt = new Date();
+  book.value.save();
+}, 1000);
 
 // --- Cover Image & Title Updates ---
-const fileInput = ref(null);
 const isEditingTitle = ref(false);
 const titleInput = ref(null);
-const localTitle = ref("");
+const showCoverDialog = ref(false);
+const coverUrlInput = ref("");
+const fileInput = ref(null);
 
 function triggerCoverUpload() {
-  fileInput.value.click();
+  coverUrlInput.value = book.value.coverImage || "";
+  showCoverDialog.value = true;
+}
+
+function triggerFileSelect() {
+  fileInput.value?.click();
 }
 
 function handleCoverImageUpload(event) {
@@ -109,13 +64,20 @@ function handleCoverImageUpload(event) {
 
   const reader = new FileReader();
   reader.onload = (e) => {
-    db.books.update(props.id, { coverImage: e.target.result });
+    book.value.coverImage = e.target.result;
+    book.value.save();
+    showCoverDialog.value = false;
   };
   reader.readAsDataURL(file);
 }
 
+function saveCoverUrl() {
+  book.value.coverImage = coverUrlInput.value;
+  book.value.save();
+  showCoverDialog.value = false;
+}
+
 function startEditingTitle() {
-  localTitle.value = book.value.title;
   isEditingTitle.value = true;
   // Focus logic needs to wait for DOM update
   setTimeout(() => {
@@ -124,9 +86,10 @@ function startEditingTitle() {
 }
 
 function saveTitle() {
-  if (localTitle.value.trim() && localTitle.value !== book.value.title) {
-    db.books.update(props.id, { title: localTitle.value });
+  if (book.value.title.trim() === "") {
+    book.value.title = "Untitled Book";
   }
+  book.value.save();
   isEditingTitle.value = false;
 }
 
@@ -142,7 +105,7 @@ function formatDate(date) {
 </script>
 
 <template>
-  <div v-if="book" class="flex min-h-screen bg-main font-display">
+  <div v-if="book" class="flex min-h-screen bg-main font-display flex-1">
     <!-- Sidebar -->
     <aside
       class="hidden lg:flex flex-col w-80 fixed left-0 top-14 bottom-0 border-r border-divider bg-sidebar p-8 overflow-y-auto"
@@ -152,14 +115,6 @@ function formatDate(date) {
         <div
           class="group aspect-3/4 w-full rounded-xl overflow-hidden shadow-lg shadow-primary/10 bg-primary/5 border border-primary/10 relative"
         >
-          <input
-            ref="fileInput"
-            type="file"
-            class="hidden"
-            accept="image/*"
-            @change="handleCoverImageUpload"
-          />
-
           <img
             v-if="book.coverImage"
             :class="'w-full h-full object-cover'"
@@ -306,7 +261,7 @@ function formatDate(date) {
             <div v-if="isEditingTitle" class="mt-4">
               <input
                 ref="titleInput"
-                v-model="localTitle"
+                v-model="book.title"
                 class="w-full text-4xl md:text-5xl font-bold text-center bg-transparent border-b-2 border-primary focus:outline-none text-main-text font-display py-2"
                 @blur="saveTitle"
                 @keydown.enter="saveTitle"
@@ -329,7 +284,11 @@ function formatDate(date) {
 
           <!-- Editor Content -->
           <div class="arabic-content min-h-[500px]">
-            <TiptapEditor v-model="content" placeholder="Start writing..." />
+            <TiptapEditor
+              v-model="book.content"
+              placeholder="Start writing..."
+              @update:modelValue="debouncedSave"
+            />
           </div>
 
           <!-- Footer Navigation -->
@@ -360,6 +319,57 @@ function formatDate(date) {
         </div>
       </div>
     </main>
+
+    <!-- Cover Image Dialog -->
+    <BaseDialog
+      v-model="showCoverDialog"
+      name="Change Cover Image"
+      :show="showCoverDialog"
+      :onSubmit="saveCoverUrl"
+      @close="showCoverDialog = false"
+    >
+      <div class="flex flex-col gap-4 w-72">
+        <BaseTextInput
+          v-model="coverUrlInput"
+          label="Cover Image URL"
+          name="cover-url"
+          placeholder="https://..."
+        />
+
+        <div class="flex items-center">
+          <div class="h-px bg-divider flex-1"></div>
+          <span class="px-3 text-xs text-main-text-muted font-medium">OR</span>
+          <div class="h-px bg-divider flex-1"></div>
+        </div>
+
+        <input
+          ref="fileInput"
+          type="file"
+          class="hidden"
+          accept="image/*"
+          @change="handleCoverImageUpload"
+        />
+        <BaseButton
+          variant="secondary"
+          class="w-full justify-center"
+          @click="triggerFileSelect"
+        >
+          <template #icon>
+            <PhotoIcon class="w-4 h-4" />
+          </template>
+          Upload from device
+        </BaseButton>
+      </div>
+
+      <template #footer>
+        <BaseButton variant="secondary" @click="showCoverDialog = false">
+          Cancel
+        </BaseButton>
+        <BaseButton variant="primary" @click="saveCoverUrl">
+          Save Cover
+        </BaseButton>
+      </template>
+    </BaseDialog>
   </div>
   <div v-else class="flex items-center justify-center min-h-screen">
     <div class="spinner"></div>
