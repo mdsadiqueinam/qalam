@@ -3,8 +3,7 @@ import { useEditor, EditorContent } from "@tiptap/vue-3";
 import { BubbleMenu } from "@tiptap/vue-3/menus";
 import { StarterKit } from "@tiptap/starter-kit";
 import { TextAlign } from "@tiptap/extension-text-align";
-import { FontFamily } from "@tiptap/extension-font-family";
-import { TextStyle } from "@tiptap/extension-text-style";
+import { TextStyleKit } from "@tiptap/extension-text-style";
 import {
   BoldIcon,
   ItalicIcon,
@@ -30,8 +29,7 @@ const list = ref(false);
 const editor = useEditor({
   extensions: [
     StarterKit,
-    TextStyle,
-    FontFamily,
+    TextStyleKit,
     TextAlign.configure({
       types: ["heading", "paragraph"],
       defaultAlignment: "right",
