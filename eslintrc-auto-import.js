@@ -140,6 +140,7 @@ export default {
     "useAsyncQueue": true,
     "useAsyncState": true,
     "useAttrs": true,
+    "useAuth": true,
     "useBase64": true,
     "useBattery": true,
     "useBluetooth": true,
