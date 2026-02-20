@@ -3,26 +3,35 @@ import { EllipsisVerticalIcon, BookOpenIcon } from "@heroicons/vue/24/outline";
 import BaseButton from "@shared/components/BaseButton.vue";
 
 // --- Props & models
-defineProps({
+const props = defineProps({
   book: {
     type: Object,
     required: true,
   },
 });
 
-const emit = defineEmits(["edit", "menu"]);
+const router = useRouter();
+
+function openBook() {
+  router.push(`/book/${props.book.id}`);
+}
+
+function editBook() {
+  router.push(`/book/${props.book.id}/edit`);
+}
 </script>
 
 <template>
   <div
     class="group flex flex-col bg-sidebar rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-border-subtle hover:border-primary/20 cursor-pointer"
+    @click="openBook"
   >
     <div class="relative aspect-3/4 overflow-hidden">
       <!-- Hover overlay -->
       <div
         class="absolute inset-0 bg-linear-to-t from-black/60 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4"
       >
-        <BaseButton class="w-full" size="md" @click.stop="emit('edit')">
+        <BaseButton class="w-full" size="md" @click.stop="editBook">
           Edit Manuscript
         </BaseButton>
       </div>
@@ -47,7 +56,6 @@ const emit = defineEmits(["edit", "menu"]);
           iconOnly
           variant="transparent"
           class="bg-white/80! hover:bg-white!"
-          @click.stop="emit('menu')"
         >
           <template #icon>
             <EllipsisVerticalIcon class="w-5 h-5 text-main-text" />
@@ -62,7 +70,9 @@ const emit = defineEmits(["edit", "menu"]);
       >
         {{ book.title }}
       </h3>
-      <p class="text-xs text-main-text-muted font-sans">{{ book.editedAt }}</p>
+      <p class="text-xs text-main-text-muted font-sans cursor-pointer">
+        {{ book.editedAt }}
+      </p>
     </div>
   </div>
 </template>

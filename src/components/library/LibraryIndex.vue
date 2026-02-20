@@ -1,27 +1,15 @@
 <script setup>
 import { ref } from "vue";
-import { useLibrary } from "@composables/useLibrary";
-import { useRouter } from "vue-router";
-import LibraryBookCard from "@components/library/LibraryBookCard.vue";
-import LibraryEmptyCard from "@components/library/LibraryEmptyCard.vue";
-import LibraryTabs from "@components/library/LibraryTabs.vue";
-import LibraryCreateBookDialog from "@components/library/LibraryCreateBookDialog.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
-import BaseButton from "@shared/components/BaseButton.vue";
 
 // --- Use
 const { activeTab, filteredBooks } = useLibrary();
 
 // --- Vars
 const showCreateDialog = ref(false);
-const router = useRouter();
 
 function createBook() {
   showCreateDialog.value = true;
-}
-
-function openBook(bookId) {
-  router.push(`/book/${bookId}`);
 }
 </script>
 
@@ -63,8 +51,6 @@ function openBook(bookId) {
           v-for="book in filteredBooks"
           :key="book.id"
           :book="book"
-          @click="openBook(book.id)"
-          @edit="openBook(book.id)"
         />
       </div>
     </div>

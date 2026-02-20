@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
-import TiptapEditor from "@components/editor/TiptapEditor.vue";
-import ArabicKeyboard from "@components/studio/ArabicKeyboard.vue";
+
+const modelValue = defineModel({ type: String, default: "" });
 
 // --- Vars (ref, reactive)
 const tiptapEditor = ref(null);
@@ -23,7 +23,7 @@ function handleKeyPress(key) {
         class="mx-auto flex w-full max-w-4xl flex-1 flex-col rounded-xl border border-border-default bg-sidebar shadow-sm overflow-hidden"
       >
         <!-- Tiptap Editor -->
-        <TiptapEditor ref="tiptapEditor" />
+        <TiptapEditor ref="tiptapEditor" v-model="modelValue" />
       </div>
     </div>
 
