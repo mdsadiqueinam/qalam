@@ -2,58 +2,87 @@ import { computed, ref, watch, onUnmounted } from "vue";
 import { useDexieLiveQuery } from "@utils/useDexieLiveQuery";
 import { db } from "@root/db/index";
 import { currentUser } from "@root/firebase/auth";
-import { subscribeToTable } from "@root/firebase/db";
+import { subscribeToTable, subscribeToPublicTable } from "@root/firebase/db";
 
 export function useLibrary() {
   // --- Vars
   const activeTab = useLocalStorage("qalam-library-active-tab", "all");
 
-  // Books from local IndexedDB (always live)
+  // Books from local IndexedDB (always live; used when not authenticated)
   const localBooks = useDexieLiveQuery(() => db.books.toArray(), {
     initialValue: [],
   });
 
-  // Books from Firestore (only populated when authenticated)
-  const firebaseBooks = ref([]);
-  let unsubscribeFirestore = null;
+  // Books from the user's private Firestore collection (authenticated only)
+  const privateBooks = ref([]);
+  // Books from the shared public Firestore collection (authenticated only)
+  const publicBooks = ref([]);
 
-  /** Clean up any existing Firestore subscription. */
-  function cleanupFirestoreSubscription() {
-    if (unsubscribeFirestore) {
-      unsubscribeFirestore();
-      unsubscribeFirestore = null;
+  let unsubscribePrivate = null;
+  let unsubscribePublic = null;
+
+  /** Stop all active Firestore subscriptions. */
+  function cleanupFirestoreSubscriptions() {
+    if (unsubscribePrivate) {
+      unsubscribePrivate();
+      unsubscribePrivate = null;
+    }
+    if (unsubscribePublic) {
+      unsubscribePublic();
+      unsubscribePublic = null;
     }
   }
 
   /**
    * Subscribe to Firestore real-time updates when the user is signed in.
-   * Unsubscribe and clear when signed out.
+   * - Private collection  →  books owned by this user
+   * - Public collection   →  books marked isPublic by any user
+   * Unsubscribes and clears when the user signs out.
    */
   watch(
     currentUser,
     (user) => {
-      cleanupFirestoreSubscription();
+      cleanupFirestoreSubscriptions();
 
       if (user) {
-        // Authenticated: subscribe to the user's Firestore books collection
-        unsubscribeFirestore = subscribeToTable(user.uid, "books", (books) => {
-          firebaseBooks.value = books;
+        // Private books for the authenticated user
+        unsubscribePrivate = subscribeToTable(user.uid, "books", (books) => {
+          privateBooks.value = books;
+        });
+
+        // Public books from all users (excludes duplicates via merge below)
+        unsubscribePublic = subscribeToPublicTable("books", (books) => {
+          publicBooks.value = books;
         });
       } else {
-        // Unauthenticated: fall back to IndexedDB
-        firebaseBooks.value = [];
+        privateBooks.value = [];
+        publicBooks.value = [];
       }
     },
     { immediate: true },
   );
 
-  // Unsubscribe from Firestore when the component that owns this composable is destroyed
-  onUnmounted(cleanupFirestoreSubscription);
+  // Clean up Firestore listeners when the owning component is destroyed
+  onUnmounted(cleanupFirestoreSubscriptions);
+
+  /**
+   * The merged books list for authenticated users.
+   *
+   * Own books take precedence (they may have `isPublic: false` locally
+   * while a stale public copy still exists).  Public books from other
+   * users are appended, deduplicating by `id`.
+   */
+  const firebaseBooks = computed(() => {
+    const ownIds = new Set(privateBooks.value.map((b) => b.id));
+    // Add public books from OTHER users (not already in own collection)
+    const othersPublic = publicBooks.value.filter((b) => !ownIds.has(b.id));
+    return [...privateBooks.value, ...othersPublic];
+  });
 
   /**
    * The active books list:
-   *  - Authenticated → Firestore books (real-time)
-   *  - Guest → local IndexedDB books (live query)
+   *  - Authenticated → merged private + public Firestore books (real-time)
+   *  - Guest         → local IndexedDB books (live query)
    */
   const books = computed(() =>
     currentUser.value ? firebaseBooks.value : localBooks.value,
