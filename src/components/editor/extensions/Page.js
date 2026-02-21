@@ -32,59 +32,121 @@ export const Page = Node.create({
   },
 
   addProseMirrorPlugins() {
+    const pageType = this.type;
+    let rafId = null;
+
+    function paginateView(view) {
+      const { state } = view;
+      let handled = false;
+
+      // Split pass: move last child of overflowing page to the next page
+      state.doc.forEach((pageNode, pos) => {
+        if (handled) return;
+        if (pageNode.type !== pageType) return;
+
+        const domNode = view.nodeDOM(pos);
+        if (!(domNode instanceof Element)) return;
+
+        // scrollHeight > clientHeight means content overflows the fixed-height page
+        if (domNode.scrollHeight > domNode.clientHeight + 2 && pageNode.childCount > 1) {
+          const tr = state.tr;
+          const lastChild = pageNode.lastChild;
+          const lastChildPos = pos + pageNode.nodeSize - lastChild.nodeSize - 1;
+
+          // Remove the overflowing block from the current page
+          tr.delete(lastChildPos, lastChildPos + lastChild.nodeSize);
+
+          // Map the next-page start position through the deletion
+          const nextPageOrigPos = pos + pageNode.nodeSize;
+          const mappedNextPagePos = tr.mapping.map(nextPageOrigPos);
+          const nextNode = state.doc.nodeAt(nextPageOrigPos);
+
+          if (nextNode && nextNode.type === pageType) {
+            // Insert at the beginning of the existing next page
+            tr.insert(mappedNextPagePos + 1, lastChild);
+          } else {
+            // Create a new page containing the overflowing block
+            tr.insert(mappedNextPagePos, pageType.create(null, lastChild));
+          }
+
+          view.dispatch(tr.setMeta("pagination", true));
+          handled = true;
+        }
+      });
+
+      if (handled) return;
+
+      // Merge pass: pull first block from next page into current page if it fits
+      state.doc.forEach((pageNode, pos) => {
+        if (handled) return;
+        if (pageNode.type !== pageType) return;
+
+        const domNode = view.nodeDOM(pos);
+        if (!(domNode instanceof Element)) return;
+
+        const nextPageOrigPos = pos + pageNode.nodeSize;
+        const nextNode = state.doc.nodeAt(nextPageOrigPos);
+        if (!nextNode || nextNode.type !== pageType) return;
+
+        const nextDomNode = view.nodeDOM(nextPageOrigPos);
+        if (!(nextDomNode instanceof Element)) return;
+
+        // Skip if the next page is somehow empty (schema requires block+, so this is a safety guard)
+        if (nextNode.childCount === 0) return;
+
+        const firstChildOfNext = nextNode.firstChild;
+        const firstChildDom = nextDomNode.firstElementChild;
+        if (!firstChildDom) return;
+
+        const maxHeight = domNode.clientHeight;
+        const currentHeight = domNode.scrollHeight;
+        const firstChildHeight = firstChildDom.offsetHeight;
+
+        // Check if the first block of the next page fits in the current page
+        if (currentHeight + firstChildHeight <= maxHeight - 2) {
+          const tr = state.tr;
+
+          // Remove the first child from the next page
+          const firstChildInNextPos = nextPageOrigPos + 1;
+          tr.delete(firstChildInNextPos, firstChildInNextPos + firstChildOfNext.nodeSize);
+
+          // If next page becomes empty after removal, remove the page itself.
+          // An empty page has nodeSize = nextNode.nodeSize - firstChildOfNext.nodeSize
+          // (the original nodeSize minus the child we just deleted, leaving just the 2 open/close tokens).
+          if (nextNode.childCount === 1) {
+            const mappedNextPagePos = tr.mapping.map(nextPageOrigPos);
+            const emptyPageSize = nextNode.nodeSize - firstChildOfNext.nodeSize;
+            tr.delete(mappedNextPagePos, mappedNextPagePos + emptyPageSize);
+          }
+
+          // Append the block at the end of the current page (before its closing token)
+          const currentPageEndPos = tr.mapping.map(pos + pageNode.nodeSize - 1);
+          tr.insert(currentPageEndPos, firstChildOfNext);
+
+          view.dispatch(tr.setMeta("pagination", true));
+          handled = true;
+        }
+      });
+    }
+
     return [
       new Plugin({
         key: new PluginKey("pagination"),
-        appendTransaction: (transactions, oldState, newState) => {
-          const docChanged = transactions.some((tr) => tr.docChanged);
-          if (!docChanged) return;
+        view() {
+          return {
+            update(view, prevState) {
+              if (prevState.doc.eq(view.state.doc)) return;
 
-          const view = this.editor.view;
-          if (!view || !view.dom) return;
-
-          // Process one overflow at a time to keep positions stable
-          let tr = newState.tr;
-          let modified = false;
-
-          const PAGE_MAX_HEIGHT = 1000; // Roughly A4 inner height
-
-          newState.doc.descendants((node, pos) => {
-            if (modified) return false; // Stop iterating if we already found an overflow
-
-            if (node.type.name === "page") {
-              const domNode = view.nodeDOM(pos);
-              if (!domNode) return;
-
-              // Check if actual DOM height exceeds max height
-              if (
-                domNode.scrollHeight > PAGE_MAX_HEIGHT &&
-                node.childCount > 1
-              ) {
-                // Find the last child block to push to the next page
-                const lastChild = node.lastChild;
-                const lastChildPos =
-                  pos + node.nodeSize - lastChild.nodeSize - 1;
-
-                // Create a new page containing this overflowing block
-                const newPageNode = this.type.create(null, [lastChild]);
-
-                // 1. Delete the block from the current page
-                tr.delete(lastChildPos, lastChildPos + lastChild.nodeSize);
-
-                // 2. Insert the new page immediately after the current page
-                // The current page's end position is now shifted because we deleted a node inside it
-                const insertPos = pos + node.nodeSize - lastChild.nodeSize;
-                tr.insert(insertPos, newPageNode);
-
-                modified = true;
-                return false; // Break out of descendants
-              }
-            }
-          });
-
-          if (modified) {
-            return tr;
-          }
+              if (rafId) cancelAnimationFrame(rafId);
+              rafId = requestAnimationFrame(() => {
+                rafId = null;
+                paginateView(view);
+              });
+            },
+            destroy() {
+              if (rafId) cancelAnimationFrame(rafId);
+            },
+          };
         },
       }),
     ];

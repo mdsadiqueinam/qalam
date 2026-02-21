@@ -27,6 +27,13 @@ const formats = useLocalStorage("qalam-editor-formats", []);
 const align = useLocalStorage("qalam-editor-align", "right");
 const list = useLocalStorage("qalam-editor-list", false);
 
+// Normalize content: wrap plain HTML in a page container if it lacks page structure
+function normalizeContent(content) {
+  if (!content || content.trim() === "") return "";
+  if (content.includes('data-type="page"')) return content;
+  return `<div data-type="page">${content}</div>`;
+}
+
 // --- Use
 const editor = useEditor({
   extensions: [
@@ -39,7 +46,7 @@ const editor = useEditor({
       defaultAlignment: "right",
     }),
   ],
-  content: modelValue.value,
+  content: normalizeContent(modelValue.value),
   editorProps: {
     attributes: {
       class:
@@ -288,11 +295,14 @@ defineExpose({ editor, insertText, deleteChar });
 
 :deep(.page-container) {
   width: 210mm;
+  height: 297mm;
   min-height: 297mm;
+  min-width: 210mm;
+  max-width: 210mm;
+  max-height: 297mm;
+  overflow: hidden;
   background-color: white;
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border: 1px solid var(--color-border-default, #d1d9d1);
   margin: 0 auto;
   padding: 2.54cm; /* Standard 1 inch margins */
   box-sizing: border-box;
@@ -301,8 +311,8 @@ defineExpose({ editor, insertText, deleteChar });
 }
 
 .dark :deep(.page-container) {
-  background-color: #1e293b; /* darker bg for pages in dark mode */
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  background-color: #1e293b;
+  border-color: var(--color-border-default, #2d3a2d);
 }
 
 :deep(.tiptap p) {
